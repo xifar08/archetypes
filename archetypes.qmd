@@ -1,0 +1,469 @@
+---
+title: "Archetypes"
+author: "Raphaël Péné"
+format: html
+number-sections: true
+css: style.css
+lang: fr
+editor: visual
+toc: true
+---
+
+# Les archetypes
+
+## Archétypes physique
+
+```{r}
+library(archetypes)
+library(ggplot2)
+```
+
+```{r}
+data("skel")
+```
+
+```{r}
+# dataframe sans le genre
+skel2<-subset(skel, select=-Gender)
+```
+
+```{r}
+#représentation de l'individu moyen
+jd()
+```
+
+```{r}
+# taille moyenne de l'échantillon
+mean(skel2$Height)
+```
+
+L'article présente des données simulées.
+
+```{r}
+data("toy")
+```
+
+```{r}
+plot(toy)
+```
+
+Dans l'article : m c'est les colonnes, x les individus, z les archétypes. Dans le dataset on a 10 colonnes (quand on enlève les genres). Un z est donc de dimension (1,10). Alpha est la pondération des individus, c'est la distance projetée sur les segments produits par les z. Pour rappel, la somme des alpha doit être égale à 1.
+
+L'archétype doit être placé dans l'enveloppe convexe de la distribution des données. En effet, on souhaite que l'archétype soit une combinaison pondérée des individus. La somme des pondérations doivent être égales à 1. On va essayer de trouver le nombre d'archétypes optimal pour minimiser la distance entre les individus et les archétypes. Résultat de théorème : à partir de 2 archétypes, les archétypes doivent être sur la bordure de l'enveloppe convexe. Dans l'algorithme, les archétypes sont placés aléatoirement dans l'enveloppe et les itérations suivantes déplacent les archétypes vers les extrémités afin de minimiser les distances. L'algorithme ne connait pas à priori la forme de la distribution des individus. Attention, ici, comme avec les k-means, les archétypes trouvés peuvent être un sous-optimum.
+
+On relie les archétypes entre eux par des segments. Les x sont projetés sur les segments entre les z. Les points à l'intérieur de l'enveloppe convexe sont une combinaison des 3 archétypes. Ceux à l'extérieur doivent être projeté. A la fin de la simulation, le "bruit" sont les individus qui ne sont pas dans l'enveloppe. Pour avoir un bruit égale à 0, il faudrait avoir le même nombre d'archétypes que le nombre de points sur l'enveloppe convexe.
+
+```{r}
+# on veut 3 archétypes
+set.seed(1986)
+a <- archetypes(toy, 3,verbose = TRUE)
+#voici le nombre d'itération pour obtenir le plus petit RSS
+a
+```
+
+```{r}
+#les coordonnées des archétypes
+a$archetypes
+```
+
+```{r}
+
+ggplot() +
+  geom_point(data = a$archetypes, aes(x = x, y = y, color = "Archetypes"),size = 5) +
+  geom_point(data = toy,          aes(x = x, y = y, color = "Toy")) +
+  scale_color_manual(values = c("Archetypes" = "red", "Toy" = "black")) +
+  labs(color = "Jeu de données")
+```
+
+```{r}
+# Graphique
+ggplot() +
+  geom_point(data = a$archetypes, aes(x = x, y = y, color = "Archetypes"),size=5) +
+  geom_point(data = toy,          aes(x = x, y = y, color = "Toy")) +
+  geom_polygon(data = a$archetypes,  aes(x = x, y = y),
+               fill = "blue", alpha = 0.2, color = "blue") +
+  scale_color_manual(values = c("Archetypes" = "red", "Toy" = "black")) +
+  labs(color = "Jeu de données")
+```
+
+Pour la prochaine fois faire le graphique avec les points verts dans l'enveloppe convexe
+
+```{r}
+# on veut 15 archétypes
+set.seed(1986)
+b <- archetypes(toy, 15,verbose = TRUE)
+#voici le nombre d'itération pour obtenir le plus petit RSS
+b$archetypes
+```
+
+## Les Archétypes : les couleurs
+
+```{r}
+#| message: false
+#| warning: false
+library(imager)
+library(tidyverse)
+library(archetypes)
+library(plotly)
+```
+
+On charge l'image du tableau de Van Gogh 'La nuit étoilée'. On la tranforme en data frame. Chaque ligne représente un point et la valeur de couleur associé soit à R (1), soit à G (2), soit à B (3). On a donc 3 lignes par coordonnées. En faisant un pivot wider on retrouve une ligne par coordonnées avec les valeurs des couleurs RGB dans 3 colonnes distinctes.
+
+```{r}
+img<-load.image('nuit_etoilée.jpeg')
+df <- as.data.frame(img)
+df_rgb <- df |> pivot_wider(names_from=cc, values_from = value)
+df_rgb <- df_rgb |> rename(R='1',G='2',B='3')
+```
+
+```{r}
+names(df_rgb)
+```
+
+Représentation en 3D d'un échantillon de 50 000 points issus du tableau avec en axe les valeurs des colonnes R, G et B.
+
+```{r}
+set.seed(123)
+df_sample <- df_rgb[sample(nrow(df_rgb), 50000), ]
+
+plot_ly(
+  data = df_sample,
+  x = ~R, y = ~G, z = ~B,
+  type = "scatter3d",
+  mode = "markers",
+  marker = list(
+    size = 2,
+    color = rgb(df_sample$R, df_sample$G, df_sample$B),
+    opacity = 0.5
+  )
+) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = "R", range = c(0, 1)),
+      yaxis = list(title = "G", range = c(0, 1)),
+      zaxis = list(title = "B", range = c(0, 1))
+    ),
+    title = "Distribution des couleurs de 50 000 points du tableau"
+  )
+```
+
+On choisit arbitrairement 3 archétypes :
+
+```{r}
+arch<-archetypes(df_sample[,3:5],3,verbose = TRUE)
+```
+
+Voici les coordonnées des 3 archétypes :
+
+```{r}
+arch$archetypes
+```
+
+Maintenant on peut ajouter ces archétypes à la distribution des 50 000 points :
+
+```{r}
+
+arch_df <- as.data.frame(arch$archetypes)
+colnames(arch_df) <- c("R", "G", "B")
+
+plot_ly(
+  data = df_sample,
+  x = ~R, y = ~G, z = ~B,
+  type = "scatter3d",
+  mode = "markers",
+  marker = list(
+    size = 2,
+    color = rgb(df_sample$R, df_sample$G, df_sample$B),
+    opacity = 0.5
+  )
+) %>%
+  add_trace(
+    data = arch_df,
+    x = ~R, y = ~G, z = ~B,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      size = 10,
+      color = rgb(arch_df$R, arch_df$G, arch_df$B),
+      opacity = 1
+    ),
+    name = "archétypes"
+  ) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = "R", range = c(0, 1)),
+      yaxis = list(title = "G", range = c(0, 1)),
+      zaxis = list(title = "B", range = c(0, 1))
+    ),
+    title = "Distribution des couleurs de 50 000 points du tableau avec les archétypes"
+  )
+```
+
+On observe donc que les archétypes sont de coleur noire, bleu foncé et jaune clair pour cet échantillon.
+
+On veut maintenant déterminer le bon nombre d'archétypes :
+
+```{r}
+nb_arche <- stepArchetypes(df_sample[3:5], k=1:5, verbose = FALSE, nrep=1)
+```
+
+En appliquant le critère du coude on obtient le chiffre de 3, même valeur que celle choisie arbitrairement.
+
+```{r}
+screeplot(nb_arche)
+```
+
+Maintenant on veut revenir à une image avec ces 50 000 points. On veut aussi que les 50 000 points prennent des couleurs liées aux archétypes, c'est à dire projetées sur le plan formé par les 3 archétypes. Celà revient à résoudre une équation du style X_proj=alpha\*Z avec Z la matrice des archétypes et alpha les paramètres qui permettent la projection. Transformation des coordonnées des archétypes en matrice :
+
+```{r}
+Z=as.matrix(arch_df)
+Z
+```
+
+On veut l'inverse de la matrice Z
+
+```{r}
+inverse_Z=solve(Z)
+inverse_Z
+```
+
+Obtention de alpha :
+
+```{r}
+alpha<-arch$alphas
+```
+
+Calcul de la matrice X_proj :
+
+```{r}
+X_proj <-alpha%*%Z
+X_proj <- as.data.frame(X_proj)
+```
+
+Représentation dans l'espace des points projetés sur le plan crée par les archétypes :
+
+```{r}
+plot_ly(
+  data = X_proj,
+  x = ~R, y = ~G, z = ~B,
+  type = "scatter3d",
+  mode = "markers",
+  marker = list(
+    size = 2,
+    color = rgb(df_sample$R, df_sample$G, df_sample$B),
+    opacity = 0.5
+  )
+) %>%
+  add_trace(
+    data = arch_df,
+    x = ~R, y = ~G, z = ~B,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      size = 10,
+      color = rgb(arch_df$R, arch_df$G, arch_df$B),
+      opacity = 1
+    ),
+    name = "archétypes"
+  ) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = "R", range = c(0, 1)),
+      yaxis = list(title = "G", range = c(0, 1)),
+      zaxis = list(title = "B", range = c(0, 1))
+    ),
+    title = "Distribution des couleurs projetées de 50 000 points du tableau"
+  )
+```
+
+On observe bien que tous les points sont bien porjetés sur le plan crée par les 3 archétypes.
+
+On souhaite maintenant repositionner ces nouvelles couleurs sur le tableau d'origine :
+
+```{r}
+df_proj <- cbind(df_sample[,1:2],X_proj)
+```
+
+```{r}
+image_proj <- df_proj |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |> 
+  mutate(cc = match(canal, c("R","G","B"))) |>
+  select(x,y,cc,value)
+```
+
+```{r}
+image_proj <- as.cimg(image_proj)
+plot(image_proj)
+```
+
+Les 50 000 points choisis aléatoirements sont difficilement visible sur la toile qui en compte en rélaité presque 3 millions.
+
+Si on essaie avec 500 000 points :
+
+```{r}
+set.seed(123)
+df_sample1 <- df_rgb[sample(nrow(df_rgb), 500000), ]
+arch1<-archetypes(df_sample1[,3:5],3,verbose = TRUE)
+```
+
+```{r}
+Z1=as.matrix(arch1$archetypes)
+X1 = as.matrix(df_sample1[,3:5])
+alpha1<-arch1$alphas
+X_proj1 <-alpha1%*%Z1
+X_proj1 <- as.data.frame(X_proj1)
+```
+
+```{r}
+df_proj1 <- cbind(df_sample1[,1:2],X_proj1)
+```
+
+```{r}
+image_proj1 <- df_proj1 |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |> 
+  mutate(cc = match(canal, c("R","G","B"))) |>
+  select(x,y,cc,value)
+```
+
+```{r}
+image_proj1 <- as.cimg(image_proj1)
+plot(image_proj1)
+```
+
+### Trouver les alphas pour l'ensemble des 8 millions de ligne
+
+Première méthode avec la fonction predict.
+
+```{r}
+alphas<-predict(arch,df_rgb[,3:5])
+```
+
+```{r}
+X_tilde<-alphas %*% Z
+colnames(X_tilde) <- c("R", "G", "B")
+X_tilde<-cbind(df_rgb[,1:2],X_tilde)
+```
+
+```{r}
+image_proj <- X_tilde |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |> 
+  mutate(cc = match(canal, c("R","G","B"))) |>
+  select(x,y,cc,value)
+
+image_proj <- as.cimg(image_proj)
+plot(image_proj)
+```
+
+```{r}
+X_tilde
+```
+
+Il faudrait comparer la différence de valeur entre les 2 tableaux
+
+```{r}
+df_rgb
+```
+
+On vérifie que les points sont bien projetés dans le triangle :
+
+```{r}
+ech<-X_tilde[sample(1:2918400,200000),]
+plot_ly(
+  data = ech,
+  x = ~R, y = ~G, z = ~B,
+  type = "scatter3d",
+  mode = "markers",
+  marker = list(
+    size = 2,
+    color = rgb(ech$R, ech$G, ech$B),
+    opacity = 0.5
+  )
+) %>%
+  add_trace(
+    data = arch_df,
+    x = ~R, y = ~G, z = ~B,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      size = 10,
+      color = rgb(arch_df$R, arch_df$G, arch_df$B),
+      opacity = 1
+    ),
+    name = "archétypes"
+  ) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = "R", range = c(0, 1)),
+      yaxis = list(title = "G", range = c(0, 1)),
+      zaxis = list(title = "B", range = c(0, 1))
+    ),
+    title = "Distribution des couleurs projetées de 200 000 points du tableau"
+  )
+```
+
+### faire avec k=2 pour voir la différence de tableau
+
+```{r}
+arch<-archetypes(df_sample[,3:5],2,verbose = TRUE)
+```
+
+```{r}
+alphas<-predict(arch,df_rgb[,3:5])
+```
+
+```{r}
+arch_df <- as.data.frame(arch$archetypes)
+colnames(arch_df) <- c("R", "G", "B")
+```
+
+```{r}
+Z=as.matrix(arch_df)
+Z
+```
+
+```{r}
+X_tilde<-alphas %*% Z
+colnames(X_tilde) <- c("R", "G", "B")
+X_tilde<-cbind(df_rgb[,1:2],X_tilde)
+```
+
+```{r}
+image_proj <- X_tilde |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |> 
+  mutate(cc = match(canal, c("R","G","B"))) |>
+  select(x,y,cc,value)
+
+image_proj <- as.cimg(image_proj)
+plot(image_proj)
+```
+
+```{r}
+ech<-X_tilde[sample(1:2918400,200000),]
+plot_ly(
+  data = ech,
+  x = ~R, y = ~G, z = ~B,
+  type = "scatter3d",
+  mode = "markers",
+  marker = list(
+    size = 2,
+    color = rgb(ech$R, ech$G, ech$B),
+    opacity = 0.5
+  )
+) %>%
+  add_trace(
+    data = arch_df,
+    x = ~R, y = ~G, z = ~B,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      size = 10,
+      color = rgb(arch_df$R, arch_df$G, arch_df$B),
+      opacity = 1
+    ),
+    name = "archétypes"
+  ) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = "R", range = c(0, 1)),
+      yaxis = list(title = "G", range = c(0, 1)),
+      zaxis = list(title = "B", range = c(0, 1))
+    ),
+    title = "Distribution des couleurs projetées de 200 000 points du tableau"
+  )
+```
