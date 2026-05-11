@@ -27,6 +27,7 @@ library(imager)
 library(tidyverse)
 library(plotly)
 library(sf)
+library(scatterplot3d)
 ```
 
 L'article utilise un jeu de données appelé **`toy`** pour présenter un exemple théorique de la détermination des archétypes. Les observations de **`toy`** sont définies par 2 coordonnées : x et y.
@@ -47,21 +48,6 @@ Les archétypes doivent être placés dans l'enveloppe convexe de la distributio
 Résultat de théorème : à partir de 2 archétypes, les archétypes doivent être sur la bordure de l'enveloppe convexe. Dans l'algorithme, les archétypes sont placés aléatoirement dans l'enveloppe et les itérations suivantes déplacent les archétypes vers les extrémités afin de minimiser les distances. L'algorithme ne connait pas à priori la forme de la distribution des individus. Attention, ici, comme avec les k-means, les archétypes trouvés peuvent être un sous-optimum.
 
 On relie les archétypes entre eux par des segments. Les observations sont projetés sur les segments tracés entre les archétypes. Les points à l'intérieur de l'enveloppe convexe sont une combinaison des 3 archétypes. Ceux à l'extérieur doivent être projeté. A la fin de la simulation, le "bruit" sont les individus qui ne sont pas dans l'enveloppe. Pour avoir un bruit égale à 0, il faudrait avoir le même nombre d'archétypes que le nombre de points sur l'enveloppe convexe.
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
 
 
 ```{r}
@@ -161,75 +147,103 @@ ggplot() +
   labs(color = "Jeu de données")
 ```
 
-<!-- ## Les Archétypes : les couleurs -->
+## Les Archétypes : les couleurs
 
-<!-- On charge l'image du tableau de Van Gogh 'La nuit étoilée'. On la tranforme en data frame. Chaque ligne représente un point et la valeur de couleur associé soit à R (1), soit à G (2), soit à B (3). On a donc 3 lignes par coordonnées. En faisant un pivot wider on retrouve une ligne par coordonnées avec les valeurs des couleurs RGB dans 3 colonnes distinctes. -->
+Maintenant que nous avons réalisé le projet théorique, nous prenons un cas pratique avec un tableau. Nous souhaitons trouver les archétypes de couleur du tableau de Van Gogh **La nuit étoilée**.
+Nous transformons l'image du tableau en data frame. Chaque ligne représente un pixel de l'image et la valeur de couleur associée. Les copuleurs sont décrites par le tryptique RGB. Soit rouge R (1), vert G (2), et bleu B (3). Par pixel nous avons donc 3 lignes pour décrire sa couleur. En faisant un pivot wider on retrouve une ligne par pixel avec les valeurs des couleurs RGB dans 3 colonnes distinctes.
 
-<!-- ```{r} -->
+```{r}
+img<-load.image('nuit_etoilée.jpeg')
+```
 
-<!-- img<-load.image('nuit_etoilée.jpeg') -->
 
-<!-- df <- as.data.frame(img) -->
+```{r}
 
-<!-- df_rgb <- df |> pivot_wider(names_from=cc, values_from = value) -->
+df <- as.data.frame(img)
 
-<!-- df_rgb <- df_rgb |> rename(R='1',G='2',B='3') -->
+df_rgb <- df |> pivot_wider(names_from=cc, values_from = value)
 
-<!-- ``` -->
+df_rgb <- df_rgb |> rename(R='1',G='2',B='3')
 
-<!-- ```{r} -->
+```
 
-<!-- names(df_rgb) -->
+```{r}
 
-<!-- ``` -->
+names(df_rgb)
+head(df_rgb,10)
 
-<!-- Représentation en 3D d'un échantillon de 50 000 points issus du tableau avec en axe les valeurs des colonnes R, G et B. -->
+```
 
-<!-- ```{r} -->
+Représentation en 3D d'un échantillon de 50 000 pixels issus du tableau projetés sur les colonnes R, G et B.
 
-<!-- set.seed(123) -->
+```{r}
+#| eval: false
+#| include: false
 
-<!-- df_sample <- df_rgb[sample(nrow(df_rgb), 50000), ] -->
+set.seed(123)
 
-<!-- plot_ly( -->
+df_sample <- df_rgb[sample(nrow(df_rgb), 50000), ]
 
-<!--   data = df_sample, -->
+plot_ly(
 
-<!--   x = ~R, y = ~G, z = ~B, -->
+  data = df_sample,
 
-<!--   type = "scatter3d", -->
+  x = ~R, y = ~G, z = ~B,
 
-<!--   mode = "markers", -->
+  type = "scatter3d",
 
-<!--   marker = list( -->
+  mode = "markers",
 
-<!--     size = 2, -->
+  marker = list(
 
-<!--     color = rgb(df_sample$R, df_sample$G, df_sample$B), -->
+    size = 2,
 
-<!--     opacity = 0.5 -->
+    color = rgb(df_sample$R, df_sample$G, df_sample$B),
 
-<!--   ) -->
+    opacity = 0.5
 
-<!-- ) %>% -->
+  )
 
-<!--   layout( -->
+) %>%
 
-<!--     scene = list( -->
+  layout(
 
-<!--       xaxis = list(title = "R", range = c(0, 1)), -->
+    scene = list(
 
-<!--       yaxis = list(title = "G", range = c(0, 1)), -->
+      xaxis = list(title = "R", range = c(0, 1)),
 
-<!--       zaxis = list(title = "B", range = c(0, 1)) -->
+      yaxis = list(title = "G", range = c(0, 1)),
 
-<!--     ), -->
+      zaxis = list(title = "B", range = c(0, 1))
 
-<!--     title = "Distribution des couleurs de 50 000 points du tableau" -->
+    ),
 
-<!--   ) -->
+    title = "Distribution des couleurs de 50 000 pixels du tableau"
 
-<!-- ``` -->
+  )
+
+```
+
+
+
+```{r}
+#| echo: false
+
+
+set.seed(123)
+df_sample <- df_rgb[sample(nrow(df_rgb), 50000), ]
+
+scatterplot3d(
+  df_sample$R, df_sample$G, df_sample$B,
+  color      = rgb(df_sample$R, df_sample$G, df_sample$B),
+  pch        = 16,
+  cex.symbols = 0.3,
+  xlab       = "R", ylab = "G", zlab = "B",
+  main       = "Distribution des couleurs de 50 000 pixels du tableau"
+)
+```
+
+
 
 <!-- On choisit arbitrairement 3 archétypes : -->
 
@@ -455,7 +469,7 @@ ggplot() +
 
 <!-- ```{r} -->
 
-<!-- image_proj <- df_proj |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |>  -->
+<!-- image_proj <- df_proj |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |> -->
 
 <!--   mutate(cc = match(canal, c("R","G","B"))) |> -->
 
