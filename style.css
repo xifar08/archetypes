@@ -1,0 +1,10 @@
+/* Ajoute un point après le numéro des sections */
+
+h1 .header-section-number::after,
+h2 .header-section-number::after,
+h3 .header-section-number::after,
+h4 .header-section-number::after,
+h5 .header-section-number::after,
+h6 .header-section-number::after {
+  content: ".";
+}
