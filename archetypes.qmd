@@ -191,7 +191,7 @@ Représentation en 3D d'un échantillon de 50 000 pixels issus du tableau projet
 
 set.seed(123)
 
-df_sample <- df_rgb[sample(nrow(df_rgb), 50000), ]
+df_sample <- df_rgb[sample(nrow(df_rgb), 500), ]
 
 plot_ly(
 
@@ -238,7 +238,7 @@ plot_ly(
 
 
 set.seed(123)
-df_sample <- df_rgb[sample(nrow(df_rgb), 50000), ]
+df_sample <- df_rgb[sample(nrow(df_rgb), 500), ]
 
 scatterplot3d(
   df_sample$R, df_sample$G, df_sample$B,
@@ -523,7 +523,8 @@ s3d <- scatterplot3d(
   xlim       = c(0, 1),
   ylim       = c(0, 1),
   zlim       = c(0, 1),
-  main       = "Distribution de 50 000 pixels du tableau projetés dans le plan formé par les archétypes"
+  main       = "Distribution de 50 000 pixels du tableau projetés dans 
+  le plan formé par les archétypes"
 )
 
 # Ajout des archétypes
@@ -757,127 +758,180 @@ s3d$points3d(
 )
 ```
 
-<!-- ### faire avec k=2 pour voir la différence de tableau -->
+### Avec 2 archétypes
 
-<!-- ```{r} -->
+```{r}
+#| label: 2 archétypes
 
-<!-- arch<-archetypes(df_sample[,3:5],2,verbose = TRUE) -->
+arch<-archetypes(df_sample[,3:5],2,verbose = TRUE)
 
-<!-- ``` -->
+```
 
-<!-- ```{r} -->
+```{r}
+#| label: predict
 
-<!-- alphas<-predict(arch,df_rgb[,3:5]) -->
+alphas<-predict(arch,df_rgb[,3:5])
 
-<!-- ``` -->
+```
 
-<!-- ```{r} -->
+```{r}
 
-<!-- arch_df <- as.data.frame(arch$archetypes) -->
+arch_df <- as.data.frame(arch$archetypes)
 
-<!-- colnames(arch_df) <- c("R", "G", "B") -->
+colnames(arch_df) <- c("R", "G", "B")
 
-<!-- ``` -->
+```
 
-<!-- ```{r} -->
+```{r}
 
-<!-- Z=as.matrix(arch_df) -->
+Z=as.matrix(arch_df)
 
-<!-- Z -->
+Z
 
-<!-- ``` -->
+```
 
-<!-- ```{r} -->
+```{r}
 
-<!-- X_tilde<-alphas %*% Z -->
+X_tilde<-alphas %*% Z
 
-<!-- colnames(X_tilde) <- c("R", "G", "B") -->
+colnames(X_tilde) <- c("R", "G", "B")
 
-<!-- X_tilde<-cbind(df_rgb[,1:2],X_tilde) -->
+X_tilde<-cbind(df_rgb[,1:2],X_tilde)
 
-<!-- ``` -->
+```
 
-<!-- ```{r} -->
+```{r}
 
-<!-- image_proj <- X_tilde |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |>  -->
+image_proj <- X_tilde |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |>
 
-<!--   mutate(cc = match(canal, c("R","G","B"))) |> -->
+  mutate(cc = match(canal, c("R","G","B"))) |>
 
-<!--   select(x,y,cc,value) -->
+  select(x,y,cc,value)
 
-<!-- image_proj <- as.cimg(image_proj) -->
+image_proj <- as.cimg(image_proj)
 
-<!-- plot(image_proj) -->
+plot(image_proj)
 
-<!-- ``` -->
+```
 
-<!-- ```{r} -->
+```{r}
+#| eval: false
+#| include: false
 
-<!-- ech<-X_tilde[sample(1:2918400,200000),] -->
+ech<-X_tilde[sample(1:2918400,200000),]
 
-<!-- plot_ly( -->
+plot_ly(
 
-<!--   data = ech, -->
+  data = ech,
 
-<!--   x = ~R, y = ~G, z = ~B, -->
+  x = ~R, y = ~G, z = ~B,
 
-<!--   type = "scatter3d", -->
+  type = "scatter3d",
 
-<!--   mode = "markers", -->
+  mode = "markers",
 
-<!--   marker = list( -->
+  marker = list(
 
-<!--     size = 2, -->
+    size = 2,
 
-<!--     color = rgb(ech$R, ech$G, ech$B), -->
+    color = rgb(ech$R, ech$G, ech$B),
 
-<!--     opacity = 0.5 -->
+    opacity = 0.5
 
-<!--   ) -->
+  )
 
-<!-- ) %>% -->
+) %>%
 
-<!--   add_trace( -->
+  add_trace(
 
-<!--     data = arch_df, -->
+    data = arch_df,
 
-<!--     x = ~R, y = ~G, z = ~B, -->
+    x = ~R, y = ~G, z = ~B,
 
-<!--     type = "scatter3d", -->
+    type = "scatter3d",
 
-<!--     mode = "markers", -->
+    mode = "markers",
 
-<!--     marker = list( -->
+    marker = list(
 
-<!--       size = 10, -->
+      size = 10,
 
-<!--       color = rgb(arch_df$R, arch_df$G, arch_df$B), -->
+      color = rgb(arch_df$R, arch_df$G, arch_df$B),
 
-<!--       opacity = 1 -->
+      opacity = 1
 
-<!--     ), -->
+    ),
 
-<!--     name = "archétypes" -->
+    name = "archétypes"
 
-<!--   ) %>% -->
+  ) %>%
 
-<!--   layout( -->
+  layout(
 
-<!--     scene = list( -->
+    scene = list(
 
-<!--       xaxis = list(title = "R", range = c(0, 1)), -->
+      xaxis = list(title = "R", range = c(0, 1)),
 
-<!--       yaxis = list(title = "G", range = c(0, 1)), -->
+      yaxis = list(title = "G", range = c(0, 1)),
 
-<!--       zaxis = list(title = "B", range = c(0, 1)) -->
+      zaxis = list(title = "B", range = c(0, 1))
 
-<!--     ), -->
+    ),
 
-<!--     title = "Distribution des couleurs projetées de 200 000 points du tableau" -->
+    title = "Distribution de 200 000 pixels du tableau projetés sur le segment formé par les archétypes"
 
-<!--   ) -->
+  )
 
-<!-- ``` -->
+```
+
+```{r}
+ech <- X_tilde[sample(1:2918400, 200000), ]
+
+# Clamp RGB to [0, 1] to absorb floating-point drift
+ech$R <- pmax(0, pmin(1, ech$R))
+ech$G <- pmax(0, pmin(1, ech$G))
+ech$B <- pmax(0, pmin(1, ech$B))
+
+arch_df$R <- pmax(0, pmin(1, arch_df$R))
+arch_df$G <- pmax(0, pmin(1, arch_df$G))
+arch_df$B <- pmax(0, pmin(1, arch_df$B))
+
+# Couleurs
+colors_ech  <- adjustcolor(
+  rgb(ech$R, ech$G, ech$B),
+  alpha.f = 0.5
+)
+colors_arch <- rgb(arch_df$R, arch_df$G, arch_df$B)
+
+# Graphique principal
+s3d <- scatterplot3d(
+  x          = ech$R,
+  y          = ech$G,
+  z          = ech$B,
+  color      = colors_ech,
+  pch        = 16,
+  cex.symbol = 0.3,
+  xlab       = "R",
+  ylab       = "G",
+  zlab       = "B",
+  xlim       = c(-0.1, 1),
+  ylim       = c(-0.1, 1),
+  zlim       = c(-0.1, 1),
+  main       = "Distribution de 200 000 pixels du tableau projetés sur 
+  le segment formé par les archétypes"
+)
+
+# Ajout des archétypes
+s3d$points3d(
+  x   = arch_df$R,
+  y   = arch_df$G,
+  z   = arch_df$B,
+  col = colors_arch,
+  pch = 16,
+  cex = 2
+)
+
+```
 
 <!-- ## Archétypes physique -->
 
