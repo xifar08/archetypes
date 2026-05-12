@@ -122,9 +122,11 @@ ggplot() +
 Nous essayons avec un nombre d'archetypes arbitrairement plus grand. Avec 4 archetypes :
 
 ```{r}
+#| label: 4 archetypes pour toy
 set.seed(1986)
 b <- archetypes(toy, 4,verbose = TRUE)
-#voici le nombre d'itération pour obtenir le plus petit RSS
+```
+```{r}
 b$archetypes
 ```
 

@@ -243,7 +243,7 @@
 \setcounter{page}{1}
 \pagestyle{fancy}
 
-\section{Les archetypes}\label{les-archetypes}
+\section{Les archétypes}\label{les-archuxe9types}
 
 L'article de \textcite{archetypes} présente le package R
 \textbf{\texttt{archetypes}}. Un archétype, est d'après le Larousse un
@@ -253,7 +253,8 @@ archétypes, dans un ensemble d'observations multivariées, qui permettent
 à toutes les observations d'être correctement représentées par une
 combianaison convexe des archétypes.
 
-\subsection{Archétypes théoriques}\label{archuxe9types-thuxe9oriques}
+\subsection{Cas théorique : le dataset
+toy}\label{cas-thuxe9orique-le-dataset-toy}
 
 Chargement des librairies R utilisées dans le projet :
 
@@ -388,17 +389,17 @@ se stoppe et les coordonnées des archétypes sont trouvées.
 [3,]  2.872474 10.197810
 \end{verbatim}
 
-On peut maintenant les représenter dans le plan avec les autres
+Nous pouvons maintenant les représenter dans le plan avec les autres
 observations :
 
 \pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-6-1.pdf}}
 
-Maintenant on peut visualiser les observations qui sont dans l'enveloppe
-convexe :
+Maintenant nous pouvons visualiser les observations qui sont dans
+l'enveloppe convexe :
 
 \pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-7-1.pdf}}
 
-On peut essayer avec un nombre d'archetypes arbitrairement plus grand.
+Nous essayons avec un nombre d'archetypes arbitrairement plus grand.
 Avec 4 archetypes :
 
 \begin{Shaded}
@@ -446,8 +447,8 @@ Avec 4 archetypes :
 
 \pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-9-1.pdf}}
 
-\subsection{Les Archétypes : les
-couleurs}\label{les-archuxe9types-les-couleurs}
+\subsection{Cas pratique : La Nuit
+étoilée}\label{cas-pratique-la-nuit-uxe9toiluxe9e}
 
 Maintenant que nous avons réalisé le projet théorique, nous prenons un
 cas pratique avec un tableau. Nous souhaitons trouver les archétypes de
@@ -589,9 +590,11 @@ archétypes, même valeur que celle choisie arbitrairement.
 Nous voulons maintenant revenir à une image avec les 50 000 points que
 nous avons choisi aléatoirement. Nous voulons que les 50 000 points
 prennent des couleurs liées aux archétypes, c'est à dire projetées sur
-le plan formé par les 3 archétypes. Celà revient à résoudre une équation
-du style X\_proj=alpha*Z avec Z la matrice des archétypes et alpha les
-paramètres qui permettent la projection.
+le plan formé par les 3 archétypes.
+
+Celà revient à résoudre une équation du style X\_proj=alpha*Z avec Z la
+matrice des archétypes et alpha les paramètres qui permettent la
+projection.
 
 Transformation des coordonnées des archétypes en matrice :
 
@@ -608,23 +611,6 @@ Transformation des coordonnées des archétypes en matrice :
 [1,] 0.254255262 0.397110529 8.695602e-01
 [2,] 0.007810608 0.009369472 2.127822e-05
 [3,] 0.984325671 0.952951485 5.568649e-01
-\end{verbatim}
-
-Nous calculons l'inverse de la matrice Z
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{inverse\_Z}\OtherTok{=}\FunctionTok{solve}\NormalTok{(Z)}
-
-\NormalTok{inverse\_Z}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-        [,1]       [,2]       [,3]
-R -2.6723381 -312.37208  4.1848668
-G  2.2256447  367.30368 -3.4894415
-B  0.9149787  -76.40405  0.3699221
 \end{verbatim}
 
 Nous obtenenons les paramètres alphas grâce au paramètre alpha de
@@ -687,7 +673,7 @@ les archétypes :
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-25-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-24-1.pdf}}
 
 Nous observons que tous les points sont bien projetés sur le plan crée
 par les 3 archétypes ou sur les segments tracés entre les archétypes.
@@ -724,21 +710,15 @@ maximum coordinate values
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-27-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-26-1.pdf}}
 
 Les 50 000 points choisis aléatoirements sont difficilement visibles sur
 la toile qui en compte en réalité presque 3 millions.
 
-Nous essayons avec 500 000 points. Nous supposons que les archétypes
-calculés pour 50 000 points sont les mêmes pour 500 000 points.
-
-Nous observons les éléments du tableau qui commencent à ressortir mais
-l'image n'est toujours pas satisfaisante.
-
 \subsubsection{Trouver les alphas pour l'ensemble des 3 millions de
 pixel}\label{trouver-les-alphas-pour-lensemble-des-3-millions-de-pixel}
 
-Première méthode avec la fonction predict.
+Nous utilisons la fonction predict. \textbf{Expliquer cette fonction}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -779,7 +759,53 @@ maximum coordinate values
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-29-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-28-1.pdf}}
+
+Nous vérifions que les pixels trouvés font bien partis du plan crée par
+les 3 archétypes. Nous prenons un échantillons de 200 000 pixels :
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Échantillonnage}
+\NormalTok{ech }\OtherTok{\textless{}{-}}\NormalTok{ X\_tilde[}\FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2918400}\NormalTok{, }\DecValTok{200000}\NormalTok{), ]}
+
+\CommentTok{\# Couleurs}
+\NormalTok{colors\_ech  }\OtherTok{\textless{}{-}} \FunctionTok{adjustcolor}\NormalTok{(}
+  \FunctionTok{rgb}\NormalTok{(ech}\SpecialCharTok{$}\NormalTok{R, ech}\SpecialCharTok{$}\NormalTok{G, ech}\SpecialCharTok{$}\NormalTok{B),}
+  \AttributeTok{alpha.f =} \FloatTok{0.5}
+\NormalTok{)}
+\NormalTok{colors\_arch }\OtherTok{\textless{}{-}} \FunctionTok{rgb}\NormalTok{(arch\_df}\SpecialCharTok{$}\NormalTok{R, arch\_df}\SpecialCharTok{$}\NormalTok{G, arch\_df}\SpecialCharTok{$}\NormalTok{B)}
+
+\CommentTok{\# Graphique principal}
+\NormalTok{s3d }\OtherTok{\textless{}{-}} \FunctionTok{scatterplot3d}\NormalTok{(}
+  \AttributeTok{x          =}\NormalTok{ ech}\SpecialCharTok{$}\NormalTok{R,}
+  \AttributeTok{y          =}\NormalTok{ ech}\SpecialCharTok{$}\NormalTok{G,}
+  \AttributeTok{z          =}\NormalTok{ ech}\SpecialCharTok{$}\NormalTok{B,}
+  \AttributeTok{color      =}\NormalTok{ colors\_ech,}
+  \AttributeTok{pch        =} \DecValTok{16}\NormalTok{,}
+  \AttributeTok{cex.symbol =} \FloatTok{0.3}\NormalTok{,}
+  \AttributeTok{xlab       =} \StringTok{"R"}\NormalTok{,}
+  \AttributeTok{ylab       =} \StringTok{"G"}\NormalTok{,}
+  \AttributeTok{zlab       =} \StringTok{"B"}\NormalTok{,}
+  \AttributeTok{xlim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+  \AttributeTok{ylim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+  \AttributeTok{zlim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+  \AttributeTok{main       =} \StringTok{"Distribution de 200 000 pixels obtenus avec la fonction predict"}
+\NormalTok{)}
+
+\CommentTok{\# Ajout des archétypes}
+\NormalTok{s3d}\SpecialCharTok{$}\FunctionTok{points3d}\NormalTok{(}
+  \AttributeTok{x   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{R,}
+  \AttributeTok{y   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{G,}
+  \AttributeTok{z   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{B,}
+  \AttributeTok{col =}\NormalTok{ colors\_arch,}
+  \AttributeTok{pch =} \DecValTok{16}\NormalTok{,}
+  \AttributeTok{cex =} \DecValTok{2}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-30-1.pdf}}
 
 % ── BIBLIOGRAPHIE ──────────────────────────────────────────── 
 \newpage
