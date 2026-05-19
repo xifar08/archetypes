@@ -126,6 +126,7 @@ Nous essayons avec un nombre d'archetypes arbitrairement plus grand. Avec 4 arch
 set.seed(1986)
 b <- archetypes(toy, 4,verbose = TRUE)
 ```
+
 ```{r}
 b$archetypes
 ```
@@ -397,7 +398,7 @@ screeplot(nb_arche)
 
 ```
 
-Nous voulons maintenant revenir à une image avec les 50 000 points que nous avons choisi aléatoirement. Nous voulons que les 50 000 points prennent des couleurs liées aux archétypes, c'est à dire projetées sur le plan formé par les 3 archétypes. 
+Nous voulons maintenant revenir à une image avec les 50 000 points que nous avons choisi aléatoirement. Nous voulons que les 50 000 points prennent des couleurs liées aux archétypes, c'est à dire projetées sur le plan formé par les 3 archétypes.
 
 Celà revient à résoudre une équation du style X_proj=alpha\*Z avec Z la matrice des archétypes et alpha les paramètres qui permettent la projection.
 
@@ -410,7 +411,6 @@ Z=as.matrix(arch_df)
 Z
 
 ```
-
 
 Nous obtenenons les paramètres alphas grâce au paramètre alpha de l'objet archetypes nommé arch :
 
@@ -565,54 +565,91 @@ plot(image_proj)
 
 Les 50 000 points choisis aléatoirements sont difficilement visibles sur la toile qui en compte en réalité presque 3 millions.
 
-
 <!-- # ```{r} -->
+
 <!-- # -->
+
 <!-- # set.seed(123) -->
+
 <!-- # -->
+
 <!-- # df_sample1 <- df_rgb[sample(nrow(df_rgb), 500000), ] -->
-<!-- # ``` -->
-<!-- # ```{r} -->
-<!-- # #| label: très lent ! -->
-<!-- # arch1<-archetypes(df_sample1[,3:5],3,verbose = TRUE) -->
-<!-- # ``` -->
-<!-- # -->
-<!-- # ```{r} -->
-<!-- # -->
-<!-- # Z1=as.matrix(arch1$archetypes) -->
-<!-- # -->
-<!-- # X1 = as.matrix(df_sample1[,3:5]) -->
-<!-- # -->
-<!-- # alpha1<-arch1$alphas -->
-<!-- # -->
-<!-- # X_proj1 <-alpha1%*%Z1 -->
-<!-- # -->
-<!-- # X_proj1 <- as.data.frame(X_proj1) -->
-<!-- # ``` -->
-<!-- # -->
-<!-- # ```{r} -->
-<!-- # -->
-<!-- # df_proj1 <- cbind(df_sample1[,1:2],X_proj1) -->
-<!-- # -->
-<!-- # ``` -->
-<!-- # -->
-<!-- # ```{r} -->
-<!-- # -->
-<!-- #  image_proj1 <- df_proj1 |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |> -->
-<!-- # -->
-<!-- #    mutate(cc = match(canal, c("R","G","B"))) |> -->
-<!-- # -->
-<!-- #    select(x,y,cc,value) -->
-<!-- # -->
-<!-- # image_proj1 <- as.cimg(image_proj1) -->
-<!-- # plot(image_proj1) -->
+
 <!-- # ``` -->
 
+<!-- # ```{r} -->
+
+<!-- # #| label: très lent ! -->
+
+<!-- # arch1<-archetypes(df_sample1[,3:5],3,verbose = TRUE) -->
+
+<!-- # ``` -->
+
+<!-- # -->
+
+<!-- # ```{r} -->
+
+<!-- # -->
+
+<!-- # Z1=as.matrix(arch1$archetypes) -->
+
+<!-- # -->
+
+<!-- # X1 = as.matrix(df_sample1[,3:5]) -->
+
+<!-- # -->
+
+<!-- # alpha1<-arch1$alphas -->
+
+<!-- # -->
+
+<!-- # X_proj1 <-alpha1%*%Z1 -->
+
+<!-- # -->
+
+<!-- # X_proj1 <- as.data.frame(X_proj1) -->
+
+<!-- # ``` -->
+
+<!-- # -->
+
+<!-- # ```{r} -->
+
+<!-- # -->
+
+<!-- # df_proj1 <- cbind(df_sample1[,1:2],X_proj1) -->
+
+<!-- # -->
+
+<!-- # ``` -->
+
+<!-- # -->
+
+<!-- # ```{r} -->
+
+<!-- # -->
+
+<!-- #  image_proj1 <- df_proj1 |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |> -->
+
+<!-- # -->
+
+<!-- #    mutate(cc = match(canal, c("R","G","B"))) |> -->
+
+<!-- # -->
+
+<!-- #    select(x,y,cc,value) -->
+
+<!-- # -->
+
+<!-- # image_proj1 <- as.cimg(image_proj1) -->
+
+<!-- # plot(image_proj1) -->
+
+<!-- # ``` -->
 
 ### Trouver les alphas pour l'ensemble des 3 millions de pixel
 
-Nous utilisons la fonction predict.
-**Expliquer cette fonction**
+Nous utilisons la fonction predict. **Expliquer cette fonction**
 
 ```{r}
 #| label: methode predict
@@ -644,7 +681,6 @@ image_proj <- as.cimg(image_proj)
 plot(image_proj)
 
 ```
-
 
 Nous vérifions que les pixels trouvés font bien partis du plan crée par les 3 archétypes. Nous prenons un échantillons de 200 000 pixels :
 
@@ -744,7 +780,8 @@ s3d <- scatterplot3d(
   xlim       = c(0, 1),
   ylim       = c(0, 1),
   zlim       = c(0, 1),
-  main       = "Distribution de 200 000 pixels obtenus avec la fonction predict"
+  main       = "Distribution de 200 000 pixels 
+  obtenus avec la fonction predict"
 )
 
 # Ajout des archétypes
@@ -933,36 +970,5 @@ s3d$points3d(
 
 ```
 
-<!-- ## Archétypes physique -->
 
-<!-- Dans l'article : m c'est les colonnes, x les individus, z les archétypes. Dans le dataset on a 10 colonnes (quand on enlève les genres). Un z est donc de dimension (1,10). Alpha est la pondération des individus, c'est la distance projetée sur les segments produits par les z. Pour rappel, la somme des alpha doit être égale à 1. -->
 
-<!-- ```{r} -->
-
-<!-- data("skel") -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-
-<!-- # dataframe sans le genre -->
-
-<!-- skel2<-subset(skel, select=-Gender) -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-
-<!-- #représentation de l'individu moyen -->
-
-<!-- jd() -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-
-<!-- # taille moyenne de l'échantillon -->
-
-<!-- mean(skel2$Height) -->
-
-<!-- ``` -->
