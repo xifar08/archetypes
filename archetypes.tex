@@ -198,7 +198,7 @@
 \begin{center}
   {\large\bfseries{Le Conservatoire National des Arts et M\'{e}tiers}}\\[0.4cm]
   \textcolor{rulegray}{\rule{10cm}{0.4pt}}\\[0.6cm]
-  {\normalsize Rapport sur la reproductibilité d'un article scientifique sur le clustering}\\[0.4cm]
+  {\normalsize Rapport sur la reproductibilité d'un article scientifique sur les archétypes}\\[0.4cm]
   {\normalsize\bfseries Fouille de donn\'{e}es}\\[0.5cm]
   {\small \textit{30 mai 2026} par}\\[0.5cm]
   {\normalsize\bfseries Arsène MBABEH - Raphaël PÉNÉ - Oscar JOSEPH--GENESLAY}\\[0.4cm]
@@ -214,8 +214,8 @@
       align=center,
       fill=white
     ]{%
-      \textbf{Titre :} \textit{Analyse et reproduction des m\'{e}thodes de Clustering
-      \`{a} partir de donn\'{e}es simul\'{e}es}%
+      \textbf{Titre :} \textit{Analyse et reproduction des m\'{e}thodes de d\'{e}termination d'arch\'{e}types
+      \`{a} partir de donn\'{e}es simul\'{e}es et d'un tableau de Van Gogh}%
     };
   \end{tikzpicture}
 \end{center}
@@ -432,7 +432,6 @@ Avec 4 archetypes :
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\#voici le nombre d\textquotesingle{}itération pour obtenir le plus petit RSS}
 \NormalTok{b}\SpecialCharTok{$}\NormalTok{archetypes}
 \end{Highlighting}
 \end{Shaded}
@@ -496,16 +495,16 @@ des couleurs RGB dans 3 colonnes distinctes.
 # A tibble: 10 x 5
        x     y      R      G     B
    <int> <int>  <dbl>  <dbl> <dbl>
- 1     1     1 0.357  0.333  0.192
- 2     2     1 0.255  0.220  0.192
- 3     3     1 0.278  0.247  0.306
- 4     4     1 0.141  0.125  0.184
- 5     5     1 0.173  0.176  0.192
- 6     6     1 0.106  0.125  0.149
- 7     7     1 0.102  0.114  0.188
- 8     8     1 0.0863 0.0941 0.192
- 9     9     1 0.141  0.149  0.247
-10    10     1 0.157  0.157  0.267
+ 1     1     1 0.353  0.325  0.251
+ 2     2     1 0.251  0.227  0.180
+ 3     3     1 0.278  0.251  0.278
+ 4     4     1 0.141  0.125  0.180
+ 5     5     1 0.173  0.173  0.220
+ 6     6     1 0.106  0.122  0.169
+ 7     7     1 0.102  0.114  0.173
+ 8     8     1 0.0784 0.0980 0.176
+ 9     9     1 0.141  0.145  0.263
+10    10     1 0.153  0.157  0.278
 \end{verbatim}
 
 Représentation en 3D d'un échantillon de 50 000 pixels issus du tableau
@@ -522,20 +521,15 @@ Nous choisissons arbitrairement de trouver 3 archétypes :
 \end{Shaded}
 
 \begin{verbatim}
-1: rss = 0.00182593, improvement = 0.00714016
-2: rss = 0.00126494, improvement = 0.00056099
-3: rss = 0.00101610, improvement = 0.00024884
-4: rss = 0.00087494, improvement = 0.00014116
-5: rss = 0.00079509, improvement = 0.00007985
-6: rss = 0.00074005, improvement = 0.00005504
-7: rss = 0.00071364, improvement = 0.00002641
-8: rss = 0.00070744, improvement = 0.00000619
-9: rss = 0.00070283, improvement = 0.00000461
-10: rss = 0.00069944, improvement = 0.00000339
-11: rss = 0.00069665, improvement = 0.00000279
-12: rss = 0.00069417, improvement = 0.00000248
-13: rss = 0.00069263, improvement = 0.00000154
-14: rss = 0.00069349, improvement = -0.00000086
+1: rss = 0.01565877, improvement = 0.05685725
+2: rss = 0.01197653, improvement = 0.00368224
+3: rss = 0.01102165, improvement = 0.00095489
+4: rss = 0.01043652, improvement = 0.00058513
+5: rss = 0.01001040, improvement = 0.00042612
+6: rss = 0.00969452, improvement = 0.00031589
+7: rss = 0.00948971, improvement = 0.00020480
+8: rss = 0.00939257, improvement = 0.00009715
+9: rss = 0.00940262, improvement = -0.00001006
 \end{verbatim}
 
 Il faut 14 itérations pour minimiser le RSS et trouver les coordonnées
@@ -548,10 +542,10 @@ des 3 archétypes Voici les coordonnées des 3 archétypes :
 \end{Shaded}
 
 \begin{verbatim}
-               R           G            B
-[1,] 0.254255262 0.397110529 8.695602e-01
-[2,] 0.007810608 0.009369472 2.127822e-05
-[3,] 0.984325671 0.952951485 5.568649e-01
+             R         G          B
+[1,] 0.0161249 0.0213559 0.02439993
+[2,] 0.8485930 0.8532974 0.64413280
+[3,] 0.2404002 0.3525821 0.68987774
 \end{verbatim}
 
 Maintenant on peut ajouter ces archétypes à la distribution des 50 000
@@ -573,7 +567,11 @@ d'archetypes entre 1 et 5 :
 \end{Shaded}
 
 \begin{verbatim}
-Warning in method(..., k = k[i]): k=5: Error in qr.solve(alphas %*% t(alphas)): matrice 'a' singulière dans solve
+Warning in method(..., k = k[i]): k=4: zs > maxKappa
+\end{verbatim}
+
+\begin{verbatim}
+Warning in method(..., k = k[i]): k=5: zs > maxKappa
 \end{verbatim}
 
 En appliquant le critère du coude nous obtenons le nombre de 3
@@ -607,10 +605,10 @@ Transformation des coordonnées des archétypes en matrice :
 \end{Shaded}
 
 \begin{verbatim}
-               R           G            B
-[1,] 0.254255262 0.397110529 8.695602e-01
-[2,] 0.007810608 0.009369472 2.127822e-05
-[3,] 0.984325671 0.952951485 5.568649e-01
+             R         G          B
+[1,] 0.0161249 0.0213559 0.02439993
+[2,] 0.8485930 0.8532974 0.64413280
+[3,] 0.2404002 0.3525821 0.68987774
 \end{verbatim}
 
 Nous obtenenons les paramètres alphas grâce au paramètre alpha de
@@ -658,7 +656,8 @@ les archétypes :
   \AttributeTok{xlim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
   \AttributeTok{ylim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
   \AttributeTok{zlim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
-  \AttributeTok{main       =} \StringTok{"Distribution de 50 000 pixels du tableau projetés dans le plan formé par les archétypes"}
+  \AttributeTok{main       =} \StringTok{"Distribution de 50 000 pixels du tableau projetés dans }
+\StringTok{  le plan formé par les archétypes"}
 \NormalTok{)}
 
 \CommentTok{\# Ajout des archétypes}
@@ -790,7 +789,8 @@ les 3 archétypes. Nous prenons un échantillons de 200 000 pixels :
   \AttributeTok{xlim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
   \AttributeTok{ylim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
   \AttributeTok{zlim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
-  \AttributeTok{main       =} \StringTok{"Distribution de 200 000 pixels obtenus avec la fonction predict"}
+  \AttributeTok{main       =} \StringTok{"Distribution de 200 000 pixels }
+\StringTok{  obtenus avec la fonction predict"}
 \NormalTok{)}
 
 \CommentTok{\# Ajout des archétypes}
@@ -806,6 +806,147 @@ les 3 archétypes. Nous prenons un échantillons de 200 000 pixels :
 \end{Shaded}
 
 \pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-30-1.pdf}}
+
+\subsubsection{Avec 2 archétypes}\label{avec-2-archuxe9types}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{arch}\OtherTok{\textless{}{-}}\FunctionTok{archetypes}\NormalTok{(df\_sample[,}\DecValTok{3}\SpecialCharTok{:}\DecValTok{5}\NormalTok{],}\DecValTok{2}\NormalTok{,}\AttributeTok{verbose =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+1: rss = 0.04364233, improvement = 0.10242154
+2: rss = 0.02991535, improvement = 0.01372698
+3: rss = 0.02807593, improvement = 0.00183942
+4: rss = 0.02777941, improvement = 0.00029652
+5: rss = 0.02753664, improvement = 0.00024278
+6: rss = 0.02730065, improvement = 0.00023598
+7: rss = 0.02710166, improvement = 0.00019899
+8: rss = 0.02697151, improvement = 0.00013015
+9: rss = 0.02689320, improvement = 0.00007831
+10: rss = 0.02684734, improvement = 0.00004587
+11: rss = 0.02682069, improvement = 0.00002664
+12: rss = 0.02680495, improvement = 0.00001575
+13: rss = 0.02679530, improvement = 0.00000964
+14: rss = 0.02679181, improvement = 0.00000349
+15: rss = 0.02679239, improvement = -0.00000058
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{alphas}\OtherTok{\textless{}{-}}\FunctionTok{predict}\NormalTok{(arch,df\_rgb[,}\DecValTok{3}\SpecialCharTok{:}\DecValTok{5}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{arch\_df }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(arch}\SpecialCharTok{$}\NormalTok{archetypes)}
+
+\FunctionTok{colnames}\NormalTok{(arch\_df) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"R"}\NormalTok{, }\StringTok{"G"}\NormalTok{, }\StringTok{"B"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Z}\OtherTok{=}\FunctionTok{as.matrix}\NormalTok{(arch\_df)}
+
+\NormalTok{Z}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+                 R          G         B
+[1,] -3.754506e-05 0.04049735 0.1495743
+[2,]  7.046777e-01 0.78274456 0.7994734
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{X\_tilde}\OtherTok{\textless{}{-}}\NormalTok{alphas }\SpecialCharTok{\%*\%}\NormalTok{ Z}
+
+\FunctionTok{colnames}\NormalTok{(X\_tilde) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"R"}\NormalTok{, }\StringTok{"G"}\NormalTok{, }\StringTok{"B"}\NormalTok{)}
+
+\NormalTok{X\_tilde}\OtherTok{\textless{}{-}}\FunctionTok{cbind}\NormalTok{(df\_rgb[,}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{],X\_tilde)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{image\_proj }\OtherTok{\textless{}{-}}\NormalTok{ X\_tilde }\SpecialCharTok{|\textgreater{}} \FunctionTok{pivot\_longer}\NormalTok{( }\AttributeTok{cols =} \FunctionTok{c}\NormalTok{(}\StringTok{"R"}\NormalTok{,}\StringTok{"G"}\NormalTok{,}\StringTok{"B"}\NormalTok{), }\AttributeTok{names\_to =} \StringTok{"canal"}\NormalTok{, }\AttributeTok{values\_to =} \StringTok{"value"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{cc =} \FunctionTok{match}\NormalTok{(canal, }\FunctionTok{c}\NormalTok{(}\StringTok{"R"}\NormalTok{,}\StringTok{"G"}\NormalTok{,}\StringTok{"B"}\NormalTok{))) }\SpecialCharTok{|\textgreater{}}
+
+  \FunctionTok{select}\NormalTok{(x,y,cc,value)}
+
+\NormalTok{image\_proj }\OtherTok{\textless{}{-}} \FunctionTok{as.cimg}\NormalTok{(image\_proj)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Warning in as.cimg.data.frame(image_proj): Guessing image dimensions from
+maximum coordinate values
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(image\_proj)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-34-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ech }\OtherTok{\textless{}{-}}\NormalTok{ X\_tilde[}\FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2918400}\NormalTok{, }\DecValTok{200000}\NormalTok{), ]}
+
+\CommentTok{\# Clamp RGB to [0, 1] to absorb floating{-}point drift}
+\NormalTok{ech}\SpecialCharTok{$}\NormalTok{R }\OtherTok{\textless{}{-}} \FunctionTok{pmax}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{pmin}\NormalTok{(}\DecValTok{1}\NormalTok{, ech}\SpecialCharTok{$}\NormalTok{R))}
+\NormalTok{ech}\SpecialCharTok{$}\NormalTok{G }\OtherTok{\textless{}{-}} \FunctionTok{pmax}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{pmin}\NormalTok{(}\DecValTok{1}\NormalTok{, ech}\SpecialCharTok{$}\NormalTok{G))}
+\NormalTok{ech}\SpecialCharTok{$}\NormalTok{B }\OtherTok{\textless{}{-}} \FunctionTok{pmax}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{pmin}\NormalTok{(}\DecValTok{1}\NormalTok{, ech}\SpecialCharTok{$}\NormalTok{B))}
+
+\NormalTok{arch\_df}\SpecialCharTok{$}\NormalTok{R }\OtherTok{\textless{}{-}} \FunctionTok{pmax}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{pmin}\NormalTok{(}\DecValTok{1}\NormalTok{, arch\_df}\SpecialCharTok{$}\NormalTok{R))}
+\NormalTok{arch\_df}\SpecialCharTok{$}\NormalTok{G }\OtherTok{\textless{}{-}} \FunctionTok{pmax}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{pmin}\NormalTok{(}\DecValTok{1}\NormalTok{, arch\_df}\SpecialCharTok{$}\NormalTok{G))}
+\NormalTok{arch\_df}\SpecialCharTok{$}\NormalTok{B }\OtherTok{\textless{}{-}} \FunctionTok{pmax}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{pmin}\NormalTok{(}\DecValTok{1}\NormalTok{, arch\_df}\SpecialCharTok{$}\NormalTok{B))}
+
+\CommentTok{\# Couleurs}
+\NormalTok{colors\_ech  }\OtherTok{\textless{}{-}} \FunctionTok{adjustcolor}\NormalTok{(}
+  \FunctionTok{rgb}\NormalTok{(ech}\SpecialCharTok{$}\NormalTok{R, ech}\SpecialCharTok{$}\NormalTok{G, ech}\SpecialCharTok{$}\NormalTok{B),}
+  \AttributeTok{alpha.f =} \FloatTok{0.5}
+\NormalTok{)}
+\NormalTok{colors\_arch }\OtherTok{\textless{}{-}} \FunctionTok{rgb}\NormalTok{(arch\_df}\SpecialCharTok{$}\NormalTok{R, arch\_df}\SpecialCharTok{$}\NormalTok{G, arch\_df}\SpecialCharTok{$}\NormalTok{B)}
+
+\CommentTok{\# Graphique principal}
+\NormalTok{s3d }\OtherTok{\textless{}{-}} \FunctionTok{scatterplot3d}\NormalTok{(}
+  \AttributeTok{x          =}\NormalTok{ ech}\SpecialCharTok{$}\NormalTok{R,}
+  \AttributeTok{y          =}\NormalTok{ ech}\SpecialCharTok{$}\NormalTok{G,}
+  \AttributeTok{z          =}\NormalTok{ ech}\SpecialCharTok{$}\NormalTok{B,}
+  \AttributeTok{color      =}\NormalTok{ colors\_ech,}
+  \AttributeTok{pch        =} \DecValTok{16}\NormalTok{,}
+  \AttributeTok{cex.symbol =} \FloatTok{0.3}\NormalTok{,}
+  \AttributeTok{xlab       =} \StringTok{"R"}\NormalTok{,}
+  \AttributeTok{ylab       =} \StringTok{"G"}\NormalTok{,}
+  \AttributeTok{zlab       =} \StringTok{"B"}\NormalTok{,}
+  \AttributeTok{xlim       =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.1}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+  \AttributeTok{ylim       =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.1}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+  \AttributeTok{zlim       =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.1}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+  \AttributeTok{main       =} \StringTok{"Distribution de 200 000 pixels du tableau projetés sur }
+\StringTok{  le segment formé par les archétypes"}
+\NormalTok{)}
+
+\CommentTok{\# Ajout des archétypes}
+\NormalTok{s3d}\SpecialCharTok{$}\FunctionTok{points3d}\NormalTok{(}
+  \AttributeTok{x   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{R,}
+  \AttributeTok{y   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{G,}
+  \AttributeTok{z   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{B,}
+  \AttributeTok{col =}\NormalTok{ colors\_arch,}
+  \AttributeTok{pch =} \DecValTok{16}\NormalTok{,}
+  \AttributeTok{cex =} \DecValTok{2}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-36-1.pdf}}
 
 % ── BIBLIOGRAPHIE ──────────────────────────────────────────── 
 \newpage

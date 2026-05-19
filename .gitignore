@@ -2,9 +2,11 @@
 .Rhistory
 .RData
 .Ruserdata
+*.Rproj
 *.csv
 *.png
 *.pdf
 *.html
 *.RDataTmp
 *.jpeg
+.positai
