@@ -212,60 +212,15 @@ head(df_rgb,10)
 ```
 Nous choisissons aléatoirement un échantillon de 50 000 pixels pour les représenter dans l'espace 3D RGB. Nous appliquons à chaque pixel sa couleur dans l'expace :
 
-```{r}
-#| eval: false
-#| include: false
-
-set.seed(123)
-
-df_sample <- df_rgb[sample(nrow(df_rgb), 500), ]
-
-plot_ly(
-
-  data = df_sample,
-
-  x = ~R, y = ~G, z = ~B,
-
-  type = "scatter3d",
-
-  mode = "markers",
-
-  marker = list(
-
-    size = 2,
-
-    color = rgb(df_sample$R, df_sample$G, df_sample$B),
-
-    opacity = 0.5
-
-  )
-
-) %>%
-
-  layout(
-
-    scene = list(
-
-      xaxis = list(title = "R", range = c(0, 1)),
-
-      yaxis = list(title = "G", range = c(0, 1)),
-
-      zaxis = list(title = "B", range = c(0, 1))
-
-    ),
-
-    title = "Distribution des couleurs de 50 000 pixels du tableau"
-
-  )
-
-```
 
 ```{r}
 #| echo: false
+#| message: false
+#| warning: false
 
 
 set.seed(123)
-df_sample <- df_rgb[sample(nrow(df_rgb), 500), ]
+df_sample <- df_rgb[sample(nrow(df_rgb), 50000), ]
 
 scatterplot3d(
   df_sample$R, df_sample$G, df_sample$B,
@@ -276,100 +231,36 @@ scatterplot3d(
   main       = "Distribution de 50 000 pixels du tableau"
 )
 ```
-
-Nous choisissons arbitrairement de trouver 3 archétypes :
+Nous souhaitons trouver les archétypes de ces pixels, nous décidons de tester avec 3 archétypes :
 
 ```{r}
 #| label: archetypes 50 000
+#| echo: false
+#| message: false
+#| warning: false
 
 arch<-archetypes(df_sample[,3:5],3,verbose = TRUE)
 
 ```
 
-Il faut 14 itérations pour minimiser le RSS et trouver les coordonnées des 3 archétypes Voici les coordonnées des 3 archétypes :
+Il faut 14 itérations pour minimiser le RSS et trouver les coordonnées des 3 archétypes Voici leurs coordonnées :
 
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
 
 arch$archetypes
 
 ```
 
-Maintenant on peut ajouter ces archétypes à la distribution des 50 000 points :
+Nous pouvons ajouter ces archétypes à la distribution des 50 000 points :
 
-```{r}
-#| eval: false
-#| include: false
-
-arch_df <- as.data.frame(arch$archetypes)
-
-colnames(arch_df) <- c("R", "G", "B")
-
-plot_ly(
-
-  data = df_sample,
-
-  x = ~R, y = ~G, z = ~B,
-
-  type = "scatter3d",
-
-  mode = "markers",
-
-  marker = list(
-
-    size = 2,
-
-    color = rgb(df_sample$R, df_sample$G, df_sample$B),
-
-    opacity = 0.5
-
-  )
-
-) %>%
-
-  add_trace(
-
-    data = arch_df,
-
-    x = ~R, y = ~G, z = ~B,
-
-    type = "scatter3d",
-
-    mode = "markers",
-
-    marker = list(
-
-      size = 10,
-
-      color = rgb(arch_df$R, arch_df$G, arch_df$B),
-
-      opacity = 1
-
-    ),
-
-    name = "archétypes"
-
-  ) %>%
-
-  layout(
-
-    scene = list(
-
-      xaxis = list(title = "R", range = c(0, 1)),
-
-      yaxis = list(title = "G", range = c(0, 1)),
-
-      zaxis = list(title = "B", range = c(0, 1))
-
-    ),
-
-    title = "Distribution des couleurs de 50 000 points du tableau avec les archétypes"
-
-  )
-
-```
 
 ```{r}
 #| echo: false
+#| message: false
+#| warning: false
 
 arch_df <- as.data.frame(arch$archetypes)
 colnames(arch_df) <- c("R", "G", "B")
@@ -411,44 +302,54 @@ Nous observons les 3 archetypes : un archétype noir, un archétype bleu foncé 
 Nous voulons maintenant déterminer le bon nombre d'archétypes. Nous utilisons la fonction stepArchetypes en spécifiant la recherche d'archetypes entre 1 et 5 :
 
 ```{r}
+#| echo: true
+#| message: false
+#| warning: false
 
 nb_arche <- stepArchetypes(df_sample[3:5], k=1:5, verbose = FALSE, nrep=1)
 
 ```
 
-En appliquant le critère du coude nous obtenons le nombre de 3 archétypes, même valeur que celle choisie arbitrairement.
+Nous observons avec le graphique ci-dessous que le RSS ne diminue presque plus après le 3ème archétype. D'après le critère du coude, le nombre optimal d'archétypes est de 3.
 
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
 
 screeplot(nb_arche)
 
 ```
 
-Nous voulons maintenant revenir à une image avec les 50 000 points que nous avons choisi aléatoirement. Nous voulons que les 50 000 points prennent des couleurs liées aux archétypes, c'est à dire projetées sur le plan formé par les 3 archétypes.
+Nous voulons maintenant revenir à une image avec les 50 000 pixels que nous avons choisi aléatoirement. Nous voulons que les 50 000 pixels prennent des couleurs liées aux archétypes, c'est à dire projetées sur le plan formé par les 3 archétypes.
 
 Celà revient à résoudre une équation du style X_proj=alpha\*Z avec Z la matrice des archétypes et alpha les paramètres qui permettent la projection.
 
-Transformation des coordonnées des archétypes en matrice :
+Nous transformons les coordonnées des archétypes en matrice :
 
 ```{r}
+#| message: false
+#| warning: false
 
 Z=as.matrix(arch_df)
 
-Z
-
 ```
 
-Nous obtenenons les paramètres alphas grâce au paramètre alpha de l'objet archetypes nommé arch :
+Nous obtenons les valeurs alphas grâce au paramètre alpha de l'objet archetypes nommé arch :
 
 ```{r}
+#| message: false
+#| warning: false
 
 alpha<-arch$alphas
 
 ```
 
-Calcul de la matrice X_proj :
+Nous calculons la matrice X_proj :
 
 ```{r}
+#| message: false
+#| warning: false
 
 X_proj <-alpha%*%Z
 
@@ -456,77 +357,12 @@ X_proj <- as.data.frame(X_proj)
 
 ```
 
-Représentation dans l'espace des points projetés sur le plan crée par les archétypes :
+Représentation dans l'espace des pixels projetés sur le plan crée par les archétypes :
 
 ```{r}
-#| eval: false
-#| include: false
-
-plot_ly(
-
-  data = X_proj,
-
-  x = ~R, y = ~G, z = ~B,
-
-  type = "scatter3d",
-
-  mode = "markers",
-
-  marker = list(
-
-    size = 2,
-
-    color = rgb(df_sample$R, df_sample$G, df_sample$B),
-
-    opacity = 0.5
-
-  )
-
-) %>%
-
-  add_trace(
-
-    data = arch_df,
-
-    x = ~R, y = ~G, z = ~B,
-
-    type = "scatter3d",
-
-    mode = "markers",
-
-    marker = list(
-
-      size = 10,
-
-      color = rgb(arch_df$R, arch_df$G, arch_df$B),
-
-      opacity = 1
-
-    ),
-
-    name = "archétypes"
-
-  ) %>%
-
-  layout(
-
-    scene = list(
-
-      xaxis = list(title = "R", range = c(0, 1)),
-
-      yaxis = list(title = "G", range = c(0, 1)),
-
-      zaxis = list(title = "B", range = c(0, 1))
-
-    ),
-
-    title = "Distribution des couleurs projetées de 50 000 points du tableau"
-
-  )
-
-```
-
-```{r}
+#| echo: false
+#| message: false
+#| warning: false
 
 # Couleurs des points (couleurs réelles depuis df_sample) et des archétypes
 colors_sample <- adjustcolor(
@@ -591,100 +427,22 @@ plot(image_proj)
 
 Les 50 000 points choisis aléatoirements sont difficilement visibles sur la toile qui en compte en réalité presque 3 millions.
 
-<!-- # ```{r} -->
-
-<!-- # -->
-
-<!-- # set.seed(123) -->
-
-<!-- # -->
-
-<!-- # df_sample1 <- df_rgb[sample(nrow(df_rgb), 500000), ] -->
-
-<!-- # ``` -->
-
-<!-- # ```{r} -->
-
-<!-- # #| label: très lent ! -->
-
-<!-- # arch1<-archetypes(df_sample1[,3:5],3,verbose = TRUE) -->
-
-<!-- # ``` -->
-
-<!-- # -->
-
-<!-- # ```{r} -->
-
-<!-- # -->
-
-<!-- # Z1=as.matrix(arch1$archetypes) -->
-
-<!-- # -->
-
-<!-- # X1 = as.matrix(df_sample1[,3:5]) -->
-
-<!-- # -->
-
-<!-- # alpha1<-arch1$alphas -->
-
-<!-- # -->
-
-<!-- # X_proj1 <-alpha1%*%Z1 -->
-
-<!-- # -->
-
-<!-- # X_proj1 <- as.data.frame(X_proj1) -->
-
-<!-- # ``` -->
-
-<!-- # -->
-
-<!-- # ```{r} -->
-
-<!-- # -->
-
-<!-- # df_proj1 <- cbind(df_sample1[,1:2],X_proj1) -->
-
-<!-- # -->
-
-<!-- # ``` -->
-
-<!-- # -->
-
-<!-- # ```{r} -->
-
-<!-- # -->
-
-<!-- #  image_proj1 <- df_proj1 |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |> -->
-
-<!-- # -->
-
-<!-- #    mutate(cc = match(canal, c("R","G","B"))) |> -->
-
-<!-- # -->
-
-<!-- #    select(x,y,cc,value) -->
-
-<!-- # -->
-
-<!-- # image_proj1 <- as.cimg(image_proj1) -->
-
-<!-- # plot(image_proj1) -->
-
-<!-- # ``` -->
 
 ### Trouver les alphas pour l'ensemble des 3 millions de pixel
 
-Nous utilisons la fonction predict. **Expliquer cette fonction**
+Nous utilisons la fonction predict pour calculer les nouveaux alphas puis nous recalculons les différentes matrices pour obtenir l'image finale. **Expliquer cette fonction**
 
 ```{r}
 #| label: methode predict
+#| message: false
+#| warning: false
 
 alphas<-predict(arch,df_rgb[,3:5])
 
 ```
 
 ```{r}
+#| echo: false
 
 X_tilde<-alphas %*% Z
 
@@ -693,7 +451,7 @@ colnames(X_tilde) <- c("R", "G", "B")
 X_tilde<-cbind(df_rgb[,1:2],X_tilde)
 
 ```
-
+Le tableau obtenu est quasiment identique à l'original :
 ```{r}
 
 image_proj <- X_tilde |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |>
@@ -709,76 +467,6 @@ plot(image_proj)
 ```
 
 Nous vérifions que les pixels trouvés font bien partis du plan crée par les 3 archétypes. Nous prenons un échantillons de 200 000 pixels :
-
-```{r}
-#| eval: false
-#| include: false
-
-ech<-X_tilde[sample(1:2918400,200000),]
-
-plot_ly(
-
-  data = ech,
-
-  x = ~R, y = ~G, z = ~B,
-
-  type = "scatter3d",
-
-  mode = "markers",
-
-  marker = list(
-
-    size = 2,
-
-    color = rgb(ech$R, ech$G, ech$B),
-
-    opacity = 0.5
-
-  )
-
-) %>%
-
-  add_trace(
-
-    data = arch_df,
-
-    x = ~R, y = ~G, z = ~B,
-
-    type = "scatter3d",
-
-    mode = "markers",
-
-    marker = list(
-
-      size = 10,
-
-      color = rgb(arch_df$R, arch_df$G, arch_df$B),
-
-      opacity = 1
-
-    ),
-
-    name = "archétypes"
-
-  ) %>%
-
-  layout(
-
-    scene = list(
-
-      xaxis = list(title = "R", range = c(0, 1)),
-
-      yaxis = list(title = "G", range = c(0, 1)),
-
-      zaxis = list(title = "B", range = c(0, 1))
-
-    ),
-
-    title = "Distribution des couleurs projetées de 200 000 points du tableau"
-
-  )
-
-```
 
 ```{r}
 
