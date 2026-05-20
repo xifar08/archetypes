@@ -132,7 +132,7 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\color{cnamgray}\textit{Cluster analysis}}
+\fancyhead[L]{\small\color{cnamgray}\textit{Archétypes}}
 \fancyhead[R]{\small\color{cnamgray}Arsène MBABEH - Raphaël PÉNÉ - Oscar JOSEPH--GENESLAY}
 \fancyfoot[C]{\small\color{cnamgray}\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
@@ -246,12 +246,12 @@
 \section{Les archétypes}\label{les-archuxe9types}
 
 L'article de \textcite{archetypes} présente le package R
-\textbf{\texttt{archetypes}}. Un archétype, est d'après le Larousse un
+\textbf{\texttt{archetypes}}. Un archétype, est d'après le Larousse, un
 \emph{``Modèle original ou idéal sur lequel est fait un ouvrage, une
 œuvre''}. Le travail ici a pour objectif de trouver des points, appelés
 archétypes, dans un ensemble d'observations multivariées, qui permettent
 à toutes les observations d'être correctement représentées par une
-combianaison convexe des archétypes.
+combinaison convexe des archétypes.
 
 \subsection{Cas théorique : le dataset
 toy}\label{cas-thuxe9orique-le-dataset-toy}
@@ -273,31 +273,17 @@ Chargement des librairies R utilisées dans le projet :
 L'article utilise un jeu de données appelé \textbf{\texttt{toy}} pour
 présenter un exemple théorique de la détermination des archétypes. Les
 observations de \textbf{\texttt{toy}} sont définies par 2 coordonnées :
-x et y.
+x et y. Nous chargeons le dataset et nous représentons les observations
+dans un plan :
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{data}\NormalTok{(}\StringTok{"toy"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{ggplot}\NormalTok{(toy,}\FunctionTok{aes}\NormalTok{(x,y))}\SpecialCharTok{+}
-  \FunctionTok{geom\_point}\NormalTok{()}\SpecialCharTok{+}
-  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"Représentation des observations du dataset }\SpecialCharTok{\textbackslash{}"}\StringTok{toy}\SpecialCharTok{\textbackslash{}"}\StringTok{"}\NormalTok{)}\SpecialCharTok{+}
-  \FunctionTok{theme\_minimal}\NormalTok{()}
-\end{Highlighting}
-\end{Shaded}
-
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-3-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-2-1.pdf}}
 
 Les archétypes doivent être placés dans l'enveloppe convexe de la
-distribution des données. En effet, on souhaite que les archétypes
+distribution des données. En effet, nous souhaitons que les archétypes
 soient une combinaison pondérée des individus. La somme des pondérations
-doivent être égales à 1. On va essayer de trouver le nombre d'archétypes
-optimal pour minimiser la distance entre les individus et les
-archétypes.
+doivent être égales à 1. Nous allons essayer de trouver le nombre
+d'archétypes optimal pour minimiser la distance entre les individus et
+les archétypes.
 
 Résultat de théorème : à partir de 2 archétypes, les archétypes doivent
 être sur la bordure de l'enveloppe convexe. Dans l'algorithme, les
@@ -315,12 +301,14 @@ simulation, le ``bruit'' sont les individus qui ne sont pas dans
 l'enveloppe. Pour avoir un bruit égale à 0, il faudrait avoir le même
 nombre d'archétypes que le nombre de points sur l'enveloppe convexe.
 
+Déterminons maintenant 3 archétypes pour le dataset toy :
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# on utilise la même seed que dans l\textquotesingle{}article}
+\CommentTok{\# nous utilisons la même seed que dans l\textquotesingle{}article}
 \FunctionTok{set.seed}\NormalTok{(}\DecValTok{1986}\NormalTok{)}
 
-\CommentTok{\# On utilise la fonction archetypes sur le dataset toy, on spécifie le nombre }
+\CommentTok{\# nous utilisons la fonction archetypes sur le dataset toy, nous spécifions le nombre }
 \CommentTok{\#d\textquotesingle{}archetypes voulu à 3}
 \NormalTok{a }\OtherTok{\textless{}{-}} \FunctionTok{archetypes}\NormalTok{(toy, }\DecValTok{3}\NormalTok{,}\AttributeTok{verbose =} \ConstantTok{TRUE}\NormalTok{)}
 \end{Highlighting}
@@ -375,12 +363,7 @@ Chaque itération de la fonction a pour objectif de minimiser le RSS.
 Lorsque l'itération suivante fait passer le RSS en négatif, l'algorithme
 se stoppe et les coordonnées des archétypes sont trouvées.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\#les coordonnées des archétypes}
-\NormalTok{a}\SpecialCharTok{$}\NormalTok{archetypes}
-\end{Highlighting}
-\end{Shaded}
+Les coordonnées des archétypes sont les suivantes :
 
 \begin{verbatim}
              x         y
@@ -392,22 +375,15 @@ se stoppe et les coordonnées des archétypes sont trouvées.
 Nous pouvons maintenant les représenter dans le plan avec les autres
 observations :
 
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-6-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-5-1.pdf}}
 
 Maintenant nous pouvons visualiser les observations qui sont dans
 l'enveloppe convexe :
 
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-7-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-6-1.pdf}}
 
 Nous essayons avec un nombre d'archetypes arbitrairement plus grand.
 Avec 4 archetypes :
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1986}\NormalTok{)}
-\NormalTok{b }\OtherTok{\textless{}{-}} \FunctionTok{archetypes}\NormalTok{(toy, }\DecValTok{4}\NormalTok{,}\AttributeTok{verbose =} \ConstantTok{TRUE}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
 
 \begin{verbatim}
 1: rss = 0.03661230, improvement = 0.05241537
@@ -430,11 +406,7 @@ Avec 4 archetypes :
 18: rss = 0.00523763, improvement = -0.00000717
 \end{verbatim}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{b}\SpecialCharTok{$}\NormalTok{archetypes}
-\end{Highlighting}
-\end{Shaded}
+Les coordonnées des 4 archétypes sont les suivantes :
 
 \begin{verbatim}
              x         y
@@ -444,7 +416,9 @@ Avec 4 archetypes :
 [4,] 13.842473  2.218635
 \end{verbatim}
 
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-9-1.pdf}}
+Nous pouvons maintenant les visualiser dans le plan :
+
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-8-1.pdf}}
 
 \subsection{Cas pratique : La Nuit
 étoilée}\label{cas-pratique-la-nuit-uxe9toiluxe9e}
@@ -452,21 +426,21 @@ Avec 4 archetypes :
 Maintenant que nous avons réalisé le projet théorique, nous prenons un
 cas pratique avec un tableau. Nous souhaitons trouver les archétypes de
 couleur du tableau de Van Gogh \textbf{La nuit étoilée}. Nous
-transformons l'image du tableau en data frame. Chaque ligne représente
-un pixel de l'image et la valeur de couleur associée. Les copuleurs sont
-décrites par le tryptique RGB. Soit rouge R (1), vert G (2), et bleu B
-(3). Par pixel nous avons donc 3 lignes pour décrire sa couleur. En
-faisant un pivot wider on retrouve une ligne par pixel avec les valeurs
-des couleurs RGB dans 3 colonnes distinctes.
+transformons l'image du tableau en data frame.
+
+Chaque ligne représente un pixel de l'image et la valeur de couleur
+associée. Les couleurs sont décrites par le tryptique RGB. Soit R rouge
+(codé 1), G vert (codé 2), et B bleu (codé 3). Par pixel nous avons donc
+3 lignes pour décrire sa couleur. En faisant un pivot wider nous
+retrouvons une ligne par pixel avec les valeurs des couleurs RGB dans 3
+colonnes distinctes.
+
+La transformations du data-frame s'effectue comme suit :
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{img}\OtherTok{\textless{}{-}}\FunctionTok{load.image}\NormalTok{(}\StringTok{\textquotesingle{}nuit\_etoilée.jpeg\textquotesingle{}}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{Shaded}
-\begin{Highlighting}[]
 \NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(img)}
 
 \NormalTok{df\_rgb }\OtherTok{\textless{}{-}}\NormalTok{ df }\SpecialCharTok{|\textgreater{}} \FunctionTok{pivot\_wider}\NormalTok{(}\AttributeTok{names\_from=}\NormalTok{cc, }\AttributeTok{values\_from =}\NormalTok{ value)}
@@ -475,21 +449,7 @@ des couleurs RGB dans 3 colonnes distinctes.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{names}\NormalTok{(df\_rgb)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-[1] "x" "y" "R" "G" "B"
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{head}\NormalTok{(df\_rgb,}\DecValTok{10}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+Et voici les 10 premières ligne du data-frame :
 
 \begin{verbatim}
 # A tibble: 10 x 5
@@ -507,51 +467,47 @@ des couleurs RGB dans 3 colonnes distinctes.
 10    10     1 0.153  0.157  0.278
 \end{verbatim}
 
-Représentation en 3D d'un échantillon de 50 000 pixels issus du tableau
-projetés sur les colonnes R, G et B.
+Nous choisissons aléatoirement un échantillon de 50 000 pixels pour les
+représenter dans l'espace 3D RGB. Nous appliquons à chaque pixel sa
+couleur dans l'expace :
 
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-14-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-11-1.pdf}}
 
-Nous choisissons arbitrairement de trouver 3 archétypes :
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{arch}\OtherTok{\textless{}{-}}\FunctionTok{archetypes}\NormalTok{(df\_sample[,}\DecValTok{3}\SpecialCharTok{:}\DecValTok{5}\NormalTok{],}\DecValTok{3}\NormalTok{,}\AttributeTok{verbose =} \ConstantTok{TRUE}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+Nous souhaitons trouver les archétypes de ces pixels, nous décidons de
+tester avec 3 archétypes :
 
 \begin{verbatim}
-1: rss = 0.01565877, improvement = 0.05685725
-2: rss = 0.01197653, improvement = 0.00368224
-3: rss = 0.01102165, improvement = 0.00095489
-4: rss = 0.01043652, improvement = 0.00058513
-5: rss = 0.01001040, improvement = 0.00042612
-6: rss = 0.00969452, improvement = 0.00031589
-7: rss = 0.00948971, improvement = 0.00020480
-8: rss = 0.00939257, improvement = 0.00009715
-9: rss = 0.00940262, improvement = -0.00001006
+1: rss = 0.00180189, improvement = 0.00727063
+2: rss = 0.00125036, improvement = 0.00055153
+3: rss = 0.00102169, improvement = 0.00022868
+4: rss = 0.00091734, improvement = 0.00010435
+5: rss = 0.00085098, improvement = 0.00006636
+6: rss = 0.00080603, improvement = 0.00004495
+7: rss = 0.00078051, improvement = 0.00002552
+8: rss = 0.00076828, improvement = 0.00001223
+9: rss = 0.00075967, improvement = 0.00000861
+10: rss = 0.00075279, improvement = 0.00000688
+11: rss = 0.00074700, improvement = 0.00000579
+12: rss = 0.00074192, improvement = 0.00000508
+13: rss = 0.00073729, improvement = 0.00000463
+14: rss = 0.00073471, improvement = 0.00000258
+15: rss = 0.00073557, improvement = -0.00000086
 \end{verbatim}
 
 Il faut 14 itérations pour minimiser le RSS et trouver les coordonnées
-des 3 archétypes Voici les coordonnées des 3 archétypes :
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{arch}\SpecialCharTok{$}\NormalTok{archetypes}
-\end{Highlighting}
-\end{Shaded}
+des 3 archétypes Voici leurs coordonnées :
 
 \begin{verbatim}
-             R         G          B
-[1,] 0.0161249 0.0213559 0.02439993
-[2,] 0.8485930 0.8532974 0.64413280
-[3,] 0.2404002 0.3525821 0.68987774
+                R            G            B
+[1,] 2.580663e-01 4.151952e-01 0.7902961889
+[2,] 1.403901e-05 1.696535e-05 0.0000202352
+[3,] 9.975207e-01 9.510556e-01 0.5898706729
 \end{verbatim}
 
-Maintenant on peut ajouter ces archétypes à la distribution des 50 000
-points :
+Nous pouvons ajouter ces archétypes à la distribution des 50 000 points
+:
 
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-17-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-13-1.pdf}}
 
 Nous observons les 3 archetypes : un archétype noir, un archétype bleu
 foncé et un archétypes jaune
@@ -566,27 +522,14 @@ d'archetypes entre 1 et 5 :
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-Warning in method(..., k = k[i]): k=4: zs > maxKappa
-\end{verbatim}
+Nous observons avec le graphique ci-dessous que le RSS ne diminue
+presque plus après le 3ème archétype. D'après le critère du coude, le
+nombre optimal d'archétypes est de 3.
 
-\begin{verbatim}
-Warning in method(..., k = k[i]): k=5: zs > maxKappa
-\end{verbatim}
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-15-1.pdf}}
 
-En appliquant le critère du coude nous obtenons le nombre de 3
-archétypes, même valeur que celle choisie arbitrairement.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{screeplot}\NormalTok{(nb\_arche)}
-\end{Highlighting}
-\end{Shaded}
-
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-19-1.pdf}}
-
-Nous voulons maintenant revenir à une image avec les 50 000 points que
-nous avons choisi aléatoirement. Nous voulons que les 50 000 points
+Nous voulons maintenant revenir à une image avec les 50 000 pixels que
+nous avons choisi aléatoirement. Nous voulons que les 50 000 pixels
 prennent des couleurs liées aux archétypes, c'est à dire projetées sur
 le plan formé par les 3 archétypes.
 
@@ -594,25 +537,16 @@ Celà revient à résoudre une équation du style X\_proj=alpha*Z avec Z la
 matrice des archétypes et alpha les paramètres qui permettent la
 projection.
 
-Transformation des coordonnées des archétypes en matrice :
+Nous transformons les coordonnées des archétypes en matrice :
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{Z}\OtherTok{=}\FunctionTok{as.matrix}\NormalTok{(arch\_df)}
-
-\NormalTok{Z}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-             R         G          B
-[1,] 0.0161249 0.0213559 0.02439993
-[2,] 0.8485930 0.8532974 0.64413280
-[3,] 0.2404002 0.3525821 0.68987774
-\end{verbatim}
-
-Nous obtenenons les paramètres alphas grâce au paramètre alpha de
-l'objet archetypes nommé arch :
+Nous obtenons les valeurs alphas grâce au paramètre alpha de l'objet
+archetypes nommé arch :
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -620,7 +554,7 @@ l'objet archetypes nommé arch :
 \end{Highlighting}
 \end{Shaded}
 
-Calcul de la matrice X\_proj :
+Nous calculons la matrice X\_proj :
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -630,49 +564,10 @@ Calcul de la matrice X\_proj :
 \end{Highlighting}
 \end{Shaded}
 
-Représentation dans l'espace des points projetés sur le plan crée par
+Représentation dans l'espace des pixels projetés sur le plan crée par
 les archétypes :
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Couleurs des points (couleurs réelles depuis df\_sample) et des archétypes}
-\NormalTok{colors\_sample }\OtherTok{\textless{}{-}} \FunctionTok{adjustcolor}\NormalTok{(}
-  \FunctionTok{rgb}\NormalTok{(df\_sample}\SpecialCharTok{$}\NormalTok{R, df\_sample}\SpecialCharTok{$}\NormalTok{G, df\_sample}\SpecialCharTok{$}\NormalTok{B),}
-  \AttributeTok{alpha.f =} \FloatTok{0.5}
-\NormalTok{)}
-\NormalTok{colors\_arch }\OtherTok{\textless{}{-}} \FunctionTok{rgb}\NormalTok{(arch\_df}\SpecialCharTok{$}\NormalTok{R, arch\_df}\SpecialCharTok{$}\NormalTok{G, arch\_df}\SpecialCharTok{$}\NormalTok{B)}
-
-\CommentTok{\# Graphique de base avec les coordonnées projetées (X\_proj) mais couleurs réelles (df\_sample)}
-\NormalTok{s3d }\OtherTok{\textless{}{-}} \FunctionTok{scatterplot3d}\NormalTok{(}
-  \AttributeTok{x          =}\NormalTok{ X\_proj}\SpecialCharTok{$}\NormalTok{R,}
-  \AttributeTok{y          =}\NormalTok{ X\_proj}\SpecialCharTok{$}\NormalTok{G,}
-  \AttributeTok{z          =}\NormalTok{ X\_proj}\SpecialCharTok{$}\NormalTok{B,}
-  \AttributeTok{color      =}\NormalTok{ colors\_sample,}
-  \AttributeTok{pch        =} \DecValTok{16}\NormalTok{,}
-  \AttributeTok{cex.symbol =} \FloatTok{0.3}\NormalTok{,}
-  \AttributeTok{xlab       =} \StringTok{"R"}\NormalTok{,}
-  \AttributeTok{ylab       =} \StringTok{"G"}\NormalTok{,}
-  \AttributeTok{zlab       =} \StringTok{"B"}\NormalTok{,}
-  \AttributeTok{xlim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
-  \AttributeTok{ylim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
-  \AttributeTok{zlim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
-  \AttributeTok{main       =} \StringTok{"Distribution de 50 000 pixels du tableau projetés dans }
-\StringTok{  le plan formé par les archétypes"}
-\NormalTok{)}
-
-\CommentTok{\# Ajout des archétypes}
-\NormalTok{s3d}\SpecialCharTok{$}\FunctionTok{points3d}\NormalTok{(}
-  \AttributeTok{x   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{R,}
-  \AttributeTok{y   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{G,}
-  \AttributeTok{z   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{B,}
-  \AttributeTok{col =}\NormalTok{ colors\_arch,}
-  \AttributeTok{pch =} \DecValTok{16}\NormalTok{,}
-  \AttributeTok{cex =} \DecValTok{2}
-\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-24-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-19-1.pdf}}
 
 Nous observons que tous les points sont bien projetés sur le plan crée
 par les 3 archétypes ou sur les segments tracés entre les archétypes.
@@ -709,7 +604,7 @@ maximum coordinate values
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-26-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-21-1.pdf}}
 
 Les 50 000 points choisis aléatoirements sont difficilement visibles sur
 la toile qui en compte en réalité presque 3 millions.
@@ -717,7 +612,9 @@ la toile qui en compte en réalité presque 3 millions.
 \subsubsection{Trouver les alphas pour l'ensemble des 3 millions de
 pixel}\label{trouver-les-alphas-pour-lensemble-des-3-millions-de-pixel}
 
-Nous utilisons la fonction predict. \textbf{Expliquer cette fonction}
+Nous utilisons la fonction predict pour calculer les nouveaux alphas
+puis nous recalculons les différentes matrices pour obtenir l'image
+finale. \textbf{Expliquer cette fonction}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -725,15 +622,7 @@ Nous utilisons la fonction predict. \textbf{Expliquer cette fonction}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{X\_tilde}\OtherTok{\textless{}{-}}\NormalTok{alphas }\SpecialCharTok{\%*\%}\NormalTok{ Z}
-
-\FunctionTok{colnames}\NormalTok{(X\_tilde) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"R"}\NormalTok{, }\StringTok{"G"}\NormalTok{, }\StringTok{"B"}\NormalTok{)}
-
-\NormalTok{X\_tilde}\OtherTok{\textless{}{-}}\FunctionTok{cbind}\NormalTok{(df\_rgb[,}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{],X\_tilde)}
-\end{Highlighting}
-\end{Shaded}
+Le tableau obtenu est quasiment identique à l'original :
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -758,7 +647,7 @@ maximum coordinate values
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-28-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-23-1.pdf}}
 
 Nous vérifions que les pixels trouvés font bien partis du plan crée par
 les 3 archétypes. Nous prenons un échantillons de 200 000 pixels :
@@ -805,9 +694,12 @@ les 3 archétypes. Nous prenons un échantillons de 200 000 pixels :
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-30-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-24-1.pdf}}
 
 \subsubsection{Avec 2 archétypes}\label{avec-2-archuxe9types}
+
+Essayons maitnenant de reproduire le tableau mais avec seulement 2
+archétypes :
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -816,22 +708,19 @@ les 3 archétypes. Nous prenons un échantillons de 200 000 pixels :
 \end{Shaded}
 
 \begin{verbatim}
-1: rss = 0.04364233, improvement = 0.10242154
-2: rss = 0.02991535, improvement = 0.01372698
-3: rss = 0.02807593, improvement = 0.00183942
-4: rss = 0.02777941, improvement = 0.00029652
-5: rss = 0.02753664, improvement = 0.00024278
-6: rss = 0.02730065, improvement = 0.00023598
-7: rss = 0.02710166, improvement = 0.00019899
-8: rss = 0.02697151, improvement = 0.00013015
-9: rss = 0.02689320, improvement = 0.00007831
-10: rss = 0.02684734, improvement = 0.00004587
-11: rss = 0.02682069, improvement = 0.00002664
-12: rss = 0.02680495, improvement = 0.00001575
-13: rss = 0.02679530, improvement = 0.00000964
-14: rss = 0.02679181, improvement = 0.00000349
-15: rss = 0.02679239, improvement = -0.00000058
+1: rss = 0.00565998, improvement = 0.00202818
+2: rss = 0.00277970, improvement = 0.00288028
+3: rss = 0.00273034, improvement = 0.00004936
+4: rss = 0.00272991, improvement = 0.00000043
+5: rss = 0.00272922, improvement = 0.00000069
+6: rss = 0.00272877, improvement = 0.00000045
+7: rss = 0.00272852, improvement = 0.00000026
+8: rss = 0.00272874, improvement = -0.00000022
 \end{verbatim}
+
+8 itérations sont nécessaires pour trouver les coordonnées des
+archétypes. Nous déterminons les alphas puis nous calculons les
+nouvelles couleurs des pixels :
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -839,62 +728,7 @@ les 3 archétypes. Nous prenons un échantillons de 200 000 pixels :
 \end{Highlighting}
 \end{Shaded}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{arch\_df }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(arch}\SpecialCharTok{$}\NormalTok{archetypes)}
-
-\FunctionTok{colnames}\NormalTok{(arch\_df) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"R"}\NormalTok{, }\StringTok{"G"}\NormalTok{, }\StringTok{"B"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{Z}\OtherTok{=}\FunctionTok{as.matrix}\NormalTok{(arch\_df)}
-
-\NormalTok{Z}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-                 R          G         B
-[1,] -3.754506e-05 0.04049735 0.1495743
-[2,]  7.046777e-01 0.78274456 0.7994734
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{X\_tilde}\OtherTok{\textless{}{-}}\NormalTok{alphas }\SpecialCharTok{\%*\%}\NormalTok{ Z}
-
-\FunctionTok{colnames}\NormalTok{(X\_tilde) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"R"}\NormalTok{, }\StringTok{"G"}\NormalTok{, }\StringTok{"B"}\NormalTok{)}
-
-\NormalTok{X\_tilde}\OtherTok{\textless{}{-}}\FunctionTok{cbind}\NormalTok{(df\_rgb[,}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{],X\_tilde)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{image\_proj }\OtherTok{\textless{}{-}}\NormalTok{ X\_tilde }\SpecialCharTok{|\textgreater{}} \FunctionTok{pivot\_longer}\NormalTok{( }\AttributeTok{cols =} \FunctionTok{c}\NormalTok{(}\StringTok{"R"}\NormalTok{,}\StringTok{"G"}\NormalTok{,}\StringTok{"B"}\NormalTok{), }\AttributeTok{names\_to =} \StringTok{"canal"}\NormalTok{, }\AttributeTok{values\_to =} \StringTok{"value"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
-
-  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{cc =} \FunctionTok{match}\NormalTok{(canal, }\FunctionTok{c}\NormalTok{(}\StringTok{"R"}\NormalTok{,}\StringTok{"G"}\NormalTok{,}\StringTok{"B"}\NormalTok{))) }\SpecialCharTok{|\textgreater{}}
-
-  \FunctionTok{select}\NormalTok{(x,y,cc,value)}
-
-\NormalTok{image\_proj }\OtherTok{\textless{}{-}} \FunctionTok{as.cimg}\NormalTok{(image\_proj)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Warning in as.cimg.data.frame(image_proj): Guessing image dimensions from
-maximum coordinate values
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{plot}\NormalTok{(image\_proj)}
-\end{Highlighting}
-\end{Shaded}
-
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-34-1.pdf}}
+Les pixels sont projetés sur le segment tracés entre les 2 archétypes.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -946,7 +780,17 @@ maximum coordinate values
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-36-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-26-1.pdf}}
+
+Puis nous pouvons reproduire le tableau avec les nouvelles couleurs des
+pixels.
+
+\pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-27-1.pdf}}
+
+Nous voyons que le jaune n'est pas présent. C'est cohérent avec les 2
+archétypes que nous avons trouvés qui sont de couleur noir et gris. Le
+segment tracé entre les 2 ne comprend pas de jaune. Les pixels projetés
+sur ce segment ne peuvent donc pas prendre cette couleur.
 
 % ── BIBLIOGRAPHIE ──────────────────────────────────────────── 
 \newpage

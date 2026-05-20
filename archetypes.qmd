@@ -412,6 +412,8 @@ df_proj <- cbind(df_sample[,1:2],X_proj)
 ```
 
 ```{r}
+#| message: false
+#| warning: false
 
 image_proj <- df_proj |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |> 
 
@@ -453,6 +455,8 @@ X_tilde<-cbind(df_rgb[,1:2],X_tilde)
 ```
 Le tableau obtenu est quasiment identique à l'original :
 ```{r}
+#| message: false
+#| warning: false
 
 image_proj <- X_tilde |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |>
 
@@ -469,6 +473,9 @@ plot(image_proj)
 Nous vérifions que les pixels trouvés font bien partis du plan crée par les 3 archétypes. Nous prenons un échantillons de 200 000 pixels :
 
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
 
 # Échantillonnage
 ech <- X_tilde[sample(1:2918400, 200000), ]
@@ -511,37 +518,36 @@ s3d$points3d(
 
 ### Avec 2 archétypes
 
+Essayons maitnenant de reproduire le tableau mais avec seulement 2 archétypes :
 ```{r}
 #| label: 2 archétypes
+#| message: false
+#| warning: false
 
 arch<-archetypes(df_sample[,3:5],2,verbose = TRUE)
 
 ```
-
+8 itérations sont nécessaires pour trouver les coordonnées des archétypes.
+Nous déterminons les alphas puis nous calculons les nouvelles couleurs des pixels :
 ```{r}
 #| label: predict
+#| message: false
+#| warning: false
 
 alphas<-predict(arch,df_rgb[,3:5])
 
 ```
 
 ```{r}
+#| message: false
+#| warning: false
+#| include: false
 
 arch_df <- as.data.frame(arch$archetypes)
 
 colnames(arch_df) <- c("R", "G", "B")
 
-```
-
-```{r}
-
 Z=as.matrix(arch_df)
-
-Z
-
-```
-
-```{r}
 
 X_tilde<-alphas %*% Z
 
@@ -549,93 +555,14 @@ colnames(X_tilde) <- c("R", "G", "B")
 
 X_tilde<-cbind(df_rgb[,1:2],X_tilde)
 
-```
-
-```{r}
-
-image_proj <- X_tilde |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |>
-
-  mutate(cc = match(canal, c("R","G","B"))) |>
-
-  select(x,y,cc,value)
-
-image_proj <- as.cimg(image_proj)
-
-plot(image_proj)
 
 ```
 
+Les pixels sont projetés sur le segment tracés entre les 2 archétypes.
 ```{r}
-#| eval: false
-#| include: false
-
-ech<-X_tilde[sample(1:2918400,200000),]
-
-plot_ly(
-
-  data = ech,
-
-  x = ~R, y = ~G, z = ~B,
-
-  type = "scatter3d",
-
-  mode = "markers",
-
-  marker = list(
-
-    size = 2,
-
-    color = rgb(ech$R, ech$G, ech$B),
-
-    opacity = 0.5
-
-  )
-
-) %>%
-
-  add_trace(
-
-    data = arch_df,
-
-    x = ~R, y = ~G, z = ~B,
-
-    type = "scatter3d",
-
-    mode = "markers",
-
-    marker = list(
-
-      size = 10,
-
-      color = rgb(arch_df$R, arch_df$G, arch_df$B),
-
-      opacity = 1
-
-    ),
-
-    name = "archétypes"
-
-  ) %>%
-
-  layout(
-
-    scene = list(
-
-      xaxis = list(title = "R", range = c(0, 1)),
-
-      yaxis = list(title = "G", range = c(0, 1)),
-
-      zaxis = list(title = "B", range = c(0, 1))
-
-    ),
-
-    title = "Distribution de 200 000 pixels du tableau projetés sur le segment formé par les archétypes"
-
-  )
-
-```
-
-```{r}
+#| echo: false
+#| message: false
+#| warning: false
 ech <- X_tilde[sample(1:2918400, 200000), ]
 
 # Clamp RGB to [0, 1] to absorb floating-point drift
@@ -683,6 +610,26 @@ s3d$points3d(
 )
 
 ```
+Puis nous pouvons reproduire le tableau avec les nouvelles couleurs des pixels.
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+image_proj <- X_tilde |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |>
+
+  mutate(cc = match(canal, c("R","G","B"))) |>
+
+  select(x,y,cc,value)
+
+image_proj <- as.cimg(image_proj)
+
+plot(image_proj)
+
+```
+Nous voyons que le jaune n'est pas présent. C'est cohérent avec les 2 archétypes que nous avons trouvés qui sont de couleur noir et gris. Le segment tracé entre les 2 ne comprend pas de jaune. Les pixels projetés sur ce segment ne peuvent donc pas prendre cette couleur.
+
+
 
 
 
