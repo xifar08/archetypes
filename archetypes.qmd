@@ -3,7 +3,7 @@ title: "Archétypes"
 author: "Arsène MBABEH - Raphaël PÉNÉ - Oscar JOSEPH--GENESLAY"
 format:
   pdf:
-    template: template.tex # Assurez-vous que le nom correspond à votre fichier LaTeX
+    template: template.tex 
     pdf-engine: xelatex
     cite-method: biblatex
     keep-tex: true
@@ -22,7 +22,7 @@ biblio-style: apa
 
 # Les archétypes
 
-L'article de @archetypes présente le package R **`archetypes`**. Un archétype, est d'après le Larousse un *"Modèle original ou idéal sur lequel est fait un ouvrage, une œuvre"*. Le travail ici a pour objectif de trouver des points, appelés archétypes, dans un ensemble d'observations multivariées, qui permettent à toutes les observations d'être correctement représentées par une combianaison convexe des archétypes.
+L'article de @archetypes présente le package R **`archetypes`**. Un archétype, est d'après le Larousse, un *"Modèle original ou idéal sur lequel est fait un ouvrage, une œuvre"*. Le travail ici a pour objectif de trouver des points, appelés archétypes, dans un ensemble d'observations multivariées, qui permettent à toutes les observations d'être correctement représentées par une combinaison convexe des archétypes.
 
 ## Cas théorique : le dataset toy
 
@@ -41,29 +41,34 @@ library(scatterplot3d)
 ```
 
 L'article utilise un jeu de données appelé **`toy`** pour présenter un exemple théorique de la détermination des archétypes. Les observations de **`toy`** sont définies par 2 coordonnées : x et y.
+Nous chargeons le dataset et nous représentons les observations dans un plan :
 
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
 data("toy")
-```
-
-```{r}
 ggplot(toy,aes(x,y))+
   geom_point()+
   ggtitle("Représentation des observations du dataset \"toy\"")+
   theme_minimal()
 ```
 
-Les archétypes doivent être placés dans l'enveloppe convexe de la distribution des données. En effet, on souhaite que les archétypes soient une combinaison pondérée des individus. La somme des pondérations doivent être égales à 1. On va essayer de trouver le nombre d'archétypes optimal pour minimiser la distance entre les individus et les archétypes.
+Les archétypes doivent être placés dans l'enveloppe convexe de la distribution des données. En effet, nous souhaitons que les archétypes soient une combinaison pondérée des individus. La somme des pondérations doivent être égales à 1. Nous allons essayer de trouver le nombre d'archétypes optimal pour minimiser la distance entre les individus et les archétypes.
 
 Résultat de théorème : à partir de 2 archétypes, les archétypes doivent être sur la bordure de l'enveloppe convexe. Dans l'algorithme, les archétypes sont placés aléatoirement dans l'enveloppe et les itérations suivantes déplacent les archétypes vers les extrémités afin de minimiser les distances. L'algorithme ne connait pas à priori la forme de la distribution des individus. Attention, ici, comme avec les k-means, les archétypes trouvés peuvent être un sous-optimum.
 
 On relie les archétypes entre eux par des segments. Les observations sont projetés sur les segments tracés entre les archétypes. Les points à l'intérieur de l'enveloppe convexe sont une combinaison des 3 archétypes. Ceux à l'extérieur doivent être projeté. A la fin de la simulation, le "bruit" sont les individus qui ne sont pas dans l'enveloppe. Pour avoir un bruit égale à 0, il faudrait avoir le même nombre d'archétypes que le nombre de points sur l'enveloppe convexe.
 
+Déterminons maintenant 3 archétypes pour le dataset toy :
+
 ```{r}
-# on utilise la même seed que dans l'article
+#| message: false
+#| warning: false
+# nous utilisons la même seed que dans l'article
 set.seed(1986)
 
-# On utilise la fonction archetypes sur le dataset toy, on spécifie le nombre 
+# nous utilisons la fonction archetypes sur le dataset toy, nous spécifions le nombre 
 #d'archetypes voulu à 3
 a <- archetypes(toy, 3,verbose = TRUE)
 a
@@ -71,7 +76,12 @@ a
 
 Chaque itération de la fonction a pour objectif de minimiser le RSS. Lorsque l'itération suivante fait passer le RSS en négatif, l'algorithme se stoppe et les coordonnées des archétypes sont trouvées.
 
+Les coordonnées des archétypes sont les suivantes :
+
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
 #les coordonnées des archétypes
 a$archetypes
 ```
@@ -80,12 +90,14 @@ Nous pouvons maintenant les représenter dans le plan avec les autres observatio
 
 ```{r}
 #| echo: false
+#| message: false
+#| warning: false
 ggplot() +
-  geom_point(data = a$archetypes, aes(x = x, y = y, color = "Archetypes"),size = 5) +
-  geom_point(data = toy,          aes(x = x, y = y, color = "Toy")) +
-  scale_color_manual(values = c("Archetypes" = "red", "Toy" = "black")) +
+  geom_point(data = a$archetypes, aes(x = x, y = y, color = "Archétypes"),size = 5) +
+  geom_point(data = toy,          aes(x = x, y = y, color = "Observations")) +
+  scale_color_manual(values = c("Archétypes" = "red", "Observations" = "black")) +
   labs(color = "Jeu de données")+
-  ggtitle("Représentation des archetypes du dataset \"toy\"")+
+  ggtitle("Représentation des observations et des archetypes du dataset \"toy\"")+
   theme_minimal()
 ```
 
@@ -93,6 +105,8 @@ Maintenant nous pouvons visualiser les observations qui sont dans l'enveloppe co
 
 ```{r}
 #| echo: false
+#| message: false
+#| warning: false
 
 toy_df <- as.data.frame(toy)
 
@@ -108,13 +122,13 @@ toy_df$inside <- as.logical(st_within(toy_sf, st_sfc(polygon_sf), sparse = FALSE
 
 # Visualisation
 ggplot() +
-  geom_point(data = as.data.frame(a$archetypes), aes(x = x, y = y, color = "Archetypes"), size = 5) +
+  geom_point(data = as.data.frame(a$archetypes), aes(x = x, y = y, color = "Archétypes"), size = 5) +
   geom_point(data = toy_df, aes(x = x, y = y, color = inside)) +
   geom_polygon(data = as.data.frame(a$archetypes), aes(x = x, y = y),
                fill = "blue", alpha = 0.1, color = "blue") +
   scale_color_manual(
-    values = c("Archetypes" = "red", "TRUE" = "green", "FALSE" = "black"),
-    labels = c("Archetypes" = "Archetypes", "TRUE" = "Toy (intérieur)", "FALSE" = "Toy (extérieur)")
+    values = c("Archétypes" = "red", "TRUE" = "green", "FALSE" = "black"),
+    labels = c("Archétypes" = "Archétypes", "TRUE" = "Observations (intérieur)", "FALSE" = "Observations (extérieur)")
   ) +
   labs(color = "Jeu de données")
 ```
@@ -123,16 +137,26 @@ Nous essayons avec un nombre d'archetypes arbitrairement plus grand. Avec 4 arch
 
 ```{r}
 #| label: 4 archetypes pour toy
+#| echo: false
+#| message: false
+#| warning: false
 set.seed(1986)
 b <- archetypes(toy, 4,verbose = TRUE)
 ```
 
+Les coordonnées des 4 archétypes sont les suivantes :
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
 b$archetypes
 ```
 
+Nous pouvons maintenant les visualiser dans le plan :
 ```{r}
 #| echo: false
+#| message: false
+#| warning: false
 
 arch_df <- as.data.frame(b$archetypes)
 
@@ -148,26 +172,28 @@ toy_sf <- st_as_sf(toy_df, coords = c("x", "y"))
 toy_df$inside <- as.logical(st_within(toy_sf, st_sfc(polygon_sf), sparse = FALSE))
 
 ggplot() +
-  geom_point(data = arch_df, aes(x = x, y = y, color = "Archetypes"), size = 5) +
+  geom_point(data = arch_df, aes(x = x, y = y, color = "Archétypes"), size = 5) +
   geom_point(data = toy_df, aes(x = x, y = y, color = inside)) +
   geom_polygon(data = arch_hull, aes(x = x, y = y),
                fill = "blue", alpha = 0.1, color = "blue") +
   scale_color_manual(
-    values = c("Archetypes" = "red", "TRUE" = "green", "FALSE" = "black"),
-    labels = c("Archetypes" = "Archetypes", "TRUE" = "Toy (intérieur)", "FALSE" = "Toy (extérieur)")
+    values = c("Archétypes" = "red", "TRUE" = "green", "FALSE" = "black"),
+    labels = c("Archetypes" = "Archetypes", "TRUE" = "Observations (intérieur)", "FALSE" = "Observations (extérieur)")
   ) +
   labs(color = "Jeu de données")
 ```
 
 ## Cas pratique : La Nuit étoilée
 
-Maintenant que nous avons réalisé le projet théorique, nous prenons un cas pratique avec un tableau. Nous souhaitons trouver les archétypes de couleur du tableau de Van Gogh **La nuit étoilée**. Nous transformons l'image du tableau en data frame. Chaque ligne représente un pixel de l'image et la valeur de couleur associée. Les copuleurs sont décrites par le tryptique RGB. Soit rouge R (1), vert G (2), et bleu B (3). Par pixel nous avons donc 3 lignes pour décrire sa couleur. En faisant un pivot wider on retrouve une ligne par pixel avec les valeurs des couleurs RGB dans 3 colonnes distinctes.
+Maintenant que nous avons réalisé le projet théorique, nous prenons un cas pratique avec un tableau. Nous souhaitons trouver les archétypes de couleur du tableau de Van Gogh **La nuit étoilée**. Nous transformons l'image du tableau en data frame. 
 
+Chaque ligne représente un pixel de l'image et la valeur de couleur associée. Les couleurs sont décrites par le tryptique RGB. Soit R rouge (codé 1), G vert (codé 2), et B bleu (codé 3). Par pixel nous avons donc 3 lignes pour décrire sa couleur. En faisant un pivot wider nous retrouvons une ligne par pixel avec les valeurs des couleurs RGB dans 3 colonnes distinctes.
+
+La transformations du data-frame s'effectue comme suit :
 ```{r}
+#| message: false
+#| warning: false
 img<-load.image('nuit_etoilée.jpeg')
-```
-
-```{r}
 
 df <- as.data.frame(img)
 
@@ -177,14 +203,14 @@ df_rgb <- df_rgb |> rename(R='1',G='2',B='3')
 
 ```
 
+Et voici les 10 premières ligne du data-frame :
 ```{r}
-
-names(df_rgb)
+#| echo: false
+#| message: false
+#| warning: false
 head(df_rgb,10)
-
 ```
-
-Représentation en 3D d'un échantillon de 50 000 pixels issus du tableau projetés sur les colonnes R, G et B.
+Nous choisissons aléatoirement un échantillon de 50 000 pixels pour les représenter dans l'espace 3D RGB. Nous appliquons à chaque pixel sa couleur dans l'expace :
 
 ```{r}
 #| eval: false
