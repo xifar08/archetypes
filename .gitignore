@@ -5,8 +5,8 @@
 *.Rproj
 *.csv
 *.png
-*.pdf
 *.html
 *.RDataTmp
 *.jpeg
 .positai
+archetypes_files

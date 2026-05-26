@@ -590,16 +590,7 @@ couleur sur le tableau d'origine :
   \FunctionTok{select}\NormalTok{(x,y,cc,value)}
 
 \NormalTok{image\_proj }\OtherTok{\textless{}{-}} \FunctionTok{as.cimg}\NormalTok{(image\_proj)}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{verbatim}
-Warning in as.cimg.data.frame(image_proj): Guessing image dimensions from
-maximum coordinate values
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \FunctionTok{plot}\NormalTok{(image\_proj)}
 \end{Highlighting}
 \end{Shaded}
@@ -633,16 +624,7 @@ Le tableau obtenu est quasiment identique à l'original :
   \FunctionTok{select}\NormalTok{(x,y,cc,value)}
 
 \NormalTok{image\_proj }\OtherTok{\textless{}{-}} \FunctionTok{as.cimg}\NormalTok{(image\_proj)}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{verbatim}
-Warning in as.cimg.data.frame(image_proj): Guessing image dimensions from
-maximum coordinate values
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \FunctionTok{plot}\NormalTok{(image\_proj)}
 \end{Highlighting}
 \end{Shaded}
@@ -651,48 +633,6 @@ maximum coordinate values
 
 Nous vérifions que les pixels trouvés font bien partis du plan crée par
 les 3 archétypes. Nous prenons un échantillons de 200 000 pixels :
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Échantillonnage}
-\NormalTok{ech }\OtherTok{\textless{}{-}}\NormalTok{ X\_tilde[}\FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2918400}\NormalTok{, }\DecValTok{200000}\NormalTok{), ]}
-
-\CommentTok{\# Couleurs}
-\NormalTok{colors\_ech  }\OtherTok{\textless{}{-}} \FunctionTok{adjustcolor}\NormalTok{(}
-  \FunctionTok{rgb}\NormalTok{(ech}\SpecialCharTok{$}\NormalTok{R, ech}\SpecialCharTok{$}\NormalTok{G, ech}\SpecialCharTok{$}\NormalTok{B),}
-  \AttributeTok{alpha.f =} \FloatTok{0.5}
-\NormalTok{)}
-\NormalTok{colors\_arch }\OtherTok{\textless{}{-}} \FunctionTok{rgb}\NormalTok{(arch\_df}\SpecialCharTok{$}\NormalTok{R, arch\_df}\SpecialCharTok{$}\NormalTok{G, arch\_df}\SpecialCharTok{$}\NormalTok{B)}
-
-\CommentTok{\# Graphique principal}
-\NormalTok{s3d }\OtherTok{\textless{}{-}} \FunctionTok{scatterplot3d}\NormalTok{(}
-  \AttributeTok{x          =}\NormalTok{ ech}\SpecialCharTok{$}\NormalTok{R,}
-  \AttributeTok{y          =}\NormalTok{ ech}\SpecialCharTok{$}\NormalTok{G,}
-  \AttributeTok{z          =}\NormalTok{ ech}\SpecialCharTok{$}\NormalTok{B,}
-  \AttributeTok{color      =}\NormalTok{ colors\_ech,}
-  \AttributeTok{pch        =} \DecValTok{16}\NormalTok{,}
-  \AttributeTok{cex.symbol =} \FloatTok{0.3}\NormalTok{,}
-  \AttributeTok{xlab       =} \StringTok{"R"}\NormalTok{,}
-  \AttributeTok{ylab       =} \StringTok{"G"}\NormalTok{,}
-  \AttributeTok{zlab       =} \StringTok{"B"}\NormalTok{,}
-  \AttributeTok{xlim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
-  \AttributeTok{ylim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
-  \AttributeTok{zlim       =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{),}
-  \AttributeTok{main       =} \StringTok{"Distribution de 200 000 pixels }
-\StringTok{  obtenus avec la fonction predict"}
-\NormalTok{)}
-
-\CommentTok{\# Ajout des archétypes}
-\NormalTok{s3d}\SpecialCharTok{$}\FunctionTok{points3d}\NormalTok{(}
-  \AttributeTok{x   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{R,}
-  \AttributeTok{y   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{G,}
-  \AttributeTok{z   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{B,}
-  \AttributeTok{col =}\NormalTok{ colors\_arch,}
-  \AttributeTok{pch =} \DecValTok{16}\NormalTok{,}
-  \AttributeTok{cex =} \DecValTok{2}
-\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
 
 \pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-24-1.pdf}}
 
@@ -729,56 +669,6 @@ nouvelles couleurs des pixels :
 \end{Shaded}
 
 Les pixels sont projetés sur le segment tracés entre les 2 archétypes.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{ech }\OtherTok{\textless{}{-}}\NormalTok{ X\_tilde[}\FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2918400}\NormalTok{, }\DecValTok{200000}\NormalTok{), ]}
-
-\CommentTok{\# Clamp RGB to [0, 1] to absorb floating{-}point drift}
-\NormalTok{ech}\SpecialCharTok{$}\NormalTok{R }\OtherTok{\textless{}{-}} \FunctionTok{pmax}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{pmin}\NormalTok{(}\DecValTok{1}\NormalTok{, ech}\SpecialCharTok{$}\NormalTok{R))}
-\NormalTok{ech}\SpecialCharTok{$}\NormalTok{G }\OtherTok{\textless{}{-}} \FunctionTok{pmax}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{pmin}\NormalTok{(}\DecValTok{1}\NormalTok{, ech}\SpecialCharTok{$}\NormalTok{G))}
-\NormalTok{ech}\SpecialCharTok{$}\NormalTok{B }\OtherTok{\textless{}{-}} \FunctionTok{pmax}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{pmin}\NormalTok{(}\DecValTok{1}\NormalTok{, ech}\SpecialCharTok{$}\NormalTok{B))}
-
-\NormalTok{arch\_df}\SpecialCharTok{$}\NormalTok{R }\OtherTok{\textless{}{-}} \FunctionTok{pmax}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{pmin}\NormalTok{(}\DecValTok{1}\NormalTok{, arch\_df}\SpecialCharTok{$}\NormalTok{R))}
-\NormalTok{arch\_df}\SpecialCharTok{$}\NormalTok{G }\OtherTok{\textless{}{-}} \FunctionTok{pmax}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{pmin}\NormalTok{(}\DecValTok{1}\NormalTok{, arch\_df}\SpecialCharTok{$}\NormalTok{G))}
-\NormalTok{arch\_df}\SpecialCharTok{$}\NormalTok{B }\OtherTok{\textless{}{-}} \FunctionTok{pmax}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{pmin}\NormalTok{(}\DecValTok{1}\NormalTok{, arch\_df}\SpecialCharTok{$}\NormalTok{B))}
-
-\CommentTok{\# Couleurs}
-\NormalTok{colors\_ech  }\OtherTok{\textless{}{-}} \FunctionTok{adjustcolor}\NormalTok{(}
-  \FunctionTok{rgb}\NormalTok{(ech}\SpecialCharTok{$}\NormalTok{R, ech}\SpecialCharTok{$}\NormalTok{G, ech}\SpecialCharTok{$}\NormalTok{B),}
-  \AttributeTok{alpha.f =} \FloatTok{0.5}
-\NormalTok{)}
-\NormalTok{colors\_arch }\OtherTok{\textless{}{-}} \FunctionTok{rgb}\NormalTok{(arch\_df}\SpecialCharTok{$}\NormalTok{R, arch\_df}\SpecialCharTok{$}\NormalTok{G, arch\_df}\SpecialCharTok{$}\NormalTok{B)}
-
-\CommentTok{\# Graphique principal}
-\NormalTok{s3d }\OtherTok{\textless{}{-}} \FunctionTok{scatterplot3d}\NormalTok{(}
-  \AttributeTok{x          =}\NormalTok{ ech}\SpecialCharTok{$}\NormalTok{R,}
-  \AttributeTok{y          =}\NormalTok{ ech}\SpecialCharTok{$}\NormalTok{G,}
-  \AttributeTok{z          =}\NormalTok{ ech}\SpecialCharTok{$}\NormalTok{B,}
-  \AttributeTok{color      =}\NormalTok{ colors\_ech,}
-  \AttributeTok{pch        =} \DecValTok{16}\NormalTok{,}
-  \AttributeTok{cex.symbol =} \FloatTok{0.3}\NormalTok{,}
-  \AttributeTok{xlab       =} \StringTok{"R"}\NormalTok{,}
-  \AttributeTok{ylab       =} \StringTok{"G"}\NormalTok{,}
-  \AttributeTok{zlab       =} \StringTok{"B"}\NormalTok{,}
-  \AttributeTok{xlim       =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.1}\NormalTok{, }\DecValTok{1}\NormalTok{),}
-  \AttributeTok{ylim       =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.1}\NormalTok{, }\DecValTok{1}\NormalTok{),}
-  \AttributeTok{zlim       =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.1}\NormalTok{, }\DecValTok{1}\NormalTok{),}
-  \AttributeTok{main       =} \StringTok{"Distribution de 200 000 pixels du tableau projetés sur }
-\StringTok{  le segment formé par les archétypes"}
-\NormalTok{)}
-
-\CommentTok{\# Ajout des archétypes}
-\NormalTok{s3d}\SpecialCharTok{$}\FunctionTok{points3d}\NormalTok{(}
-  \AttributeTok{x   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{R,}
-  \AttributeTok{y   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{G,}
-  \AttributeTok{z   =}\NormalTok{ arch\_df}\SpecialCharTok{$}\NormalTok{B,}
-  \AttributeTok{col =}\NormalTok{ colors\_arch,}
-  \AttributeTok{pch =} \DecValTok{16}\NormalTok{,}
-  \AttributeTok{cex =} \DecValTok{2}
-\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
 
 \pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-26-1.pdf}}
 
