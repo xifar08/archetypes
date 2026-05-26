@@ -243,18 +243,15 @@
 \setcounter{page}{1}
 \pagestyle{fancy}
 
-\section{Les archétypes}\label{les-archuxe9types}
+\section{Les archétypes, cas théorique : le dataset
+toy}\label{les-archuxe9types-cas-thuxe9orique-le-dataset-toy}
 
 L'article de \textcite{archetypes} présente le package R
 \textbf{\texttt{archetypes}}. Un archétype, est d'après le Larousse, un
 \emph{``Modèle original ou idéal sur lequel est fait un ouvrage, une
 œuvre''}. Le travail ici a pour objectif de trouver des points, appelés
-archétypes, dans un ensemble d'observations multivariées, qui permettent
-à toutes les observations d'être correctement représentées par une
-combinaison convexe des archétypes.
-
-\subsection{Cas théorique : le dataset
-toy}\label{cas-thuxe9orique-le-dataset-toy}
+archétypes, dans un ensemble d'observations multivariées. La combinaison
+convexe de ces archétypes permet de représenter les observations.
 
 Chargement des librairies R utilisées dans le projet :
 
@@ -267,6 +264,8 @@ Chargement des librairies R utilisées dans le projet :
 \FunctionTok{library}\NormalTok{(plotly)}
 \FunctionTok{library}\NormalTok{(sf)}
 \FunctionTok{library}\NormalTok{(scatterplot3d)}
+\FunctionTok{library}\NormalTok{(knitr)}
+\FunctionTok{library}\NormalTok{(kableExtra)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -293,13 +292,12 @@ les distances. L'algorithme ne connait pas à priori la forme de la
 distribution des individus. Attention, ici, comme avec les k-means, les
 archétypes trouvés peuvent être un sous-optimum.
 
-On relie les archétypes entre eux par des segments. Les observations
-sont projetés sur les segments tracés entre les archétypes. Les points à
+On relie les archétypes entre eux par des segments. Les points à
 l'intérieur de l'enveloppe convexe sont une combinaison des 3
-archétypes. Ceux à l'extérieur doivent être projeté. A la fin de la
-simulation, le ``bruit'' sont les individus qui ne sont pas dans
-l'enveloppe. Pour avoir un bruit égale à 0, il faudrait avoir le même
-nombre d'archétypes que le nombre de points sur l'enveloppe convexe.
+archétypes. Ceux à l'extérieur, aussi appelé bruit, doivent être
+projetés sur les segments qui relient les archétypes entre eux. Pour
+avoir un bruit égale à 0, il faudrait avoir le même nombre d'archétypes
+que le nombre de points sur l'enveloppe convexe.
 
 Déterminons maintenant 3 archétypes pour le dataset toy :
 
@@ -308,8 +306,8 @@ Déterminons maintenant 3 archétypes pour le dataset toy :
 \CommentTok{\# nous utilisons la même seed que dans l\textquotesingle{}article}
 \FunctionTok{set.seed}\NormalTok{(}\DecValTok{1986}\NormalTok{)}
 
-\CommentTok{\# nous utilisons la fonction archetypes sur le dataset toy, nous spécifions le nombre }
-\CommentTok{\#d\textquotesingle{}archetypes voulu à 3}
+\CommentTok{\# nous utilisons la fonction archetypes sur le dataset toy, nous spécifions  }
+\CommentTok{\# le nombre d\textquotesingle{}archetypes voulu à 3}
 \NormalTok{a }\OtherTok{\textless{}{-}} \FunctionTok{archetypes}\NormalTok{(toy, }\DecValTok{3}\NormalTok{,}\AttributeTok{verbose =} \ConstantTok{TRUE}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -365,12 +363,16 @@ se stoppe et les coordonnées des archétypes sont trouvées.
 
 Les coordonnées des archétypes sont les suivantes :
 
-\begin{verbatim}
-             x         y
-[1,] 18.832121 18.623102
-[2,] 14.204922  2.239856
-[3,]  2.872474 10.197810
-\end{verbatim}
+\begin{longtable}[t]{>{}lrr}
+\caption{\label{tab:unnamed-chunk-4}Matrice de coordonnées}\\
+\toprule
+\cellcolor[HTML]{3498db}{\textcolor{white}{\textbf{}}} & \cellcolor[HTML]{3498db}{\textcolor{white}{\textbf{x}}} & \cellcolor[HTML]{3498db}{\textcolor{white}{\textbf{y}}}\\
+\midrule
+\textcolor{gray}{\textbf{{}[1,]}} & 18.832121 & 18.623102\\
+\textcolor{gray}{\textbf{{}[2,]}} & 14.204922 & 2.239856\\
+\textcolor{gray}{\textbf{{}[3,]}} & 2.872474 & 10.197810\\
+\bottomrule
+\end{longtable}
 
 Nous pouvons maintenant les représenter dans le plan avec les autres
 observations :
@@ -420,7 +422,7 @@ Nous pouvons maintenant les visualiser dans le plan :
 
 \pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-8-1.pdf}}
 
-\subsection{Cas pratique : La Nuit
+\section{Cas pratique : La Nuit
 étoilée}\label{cas-pratique-la-nuit-uxe9toiluxe9e}
 
 Maintenant que nous avons réalisé le projet théorique, nous prenons un
@@ -533,9 +535,10 @@ nous avons choisi aléatoirement. Nous voulons que les 50 000 pixels
 prennent des couleurs liées aux archétypes, c'est à dire projetées sur
 le plan formé par les 3 archétypes.
 
-Celà revient à résoudre une équation du style X\_proj=alpha*Z avec Z la
-matrice des archétypes et alpha les paramètres qui permettent la
-projection.
+Celà revient à résoudre une équation du style : \[
+X_{proj} = \alpha \cdot Z
+\] avec \(Z\) la matrice des archétypes et \(\alpha\) les paramètres qui
+permettent la projection.
 
 Nous transformons les coordonnées des archétypes en matrice :
 
@@ -545,8 +548,8 @@ Nous transformons les coordonnées des archétypes en matrice :
 \end{Highlighting}
 \end{Shaded}
 
-Nous obtenons les valeurs alphas grâce au paramètre alpha de l'objet
-archetypes nommé arch :
+Nous obtenons les valeurs \(\alpha\) grâce au paramètre alphas de
+l'objet archetypes nommé arch :
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -554,7 +557,7 @@ archetypes nommé arch :
 \end{Highlighting}
 \end{Shaded}
 
-Nous calculons la matrice X\_proj :
+Nous calculons la matrice \(X_{proj}\) :
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -600,7 +603,7 @@ couleur sur le tableau d'origine :
 Les 50 000 points choisis aléatoirements sont difficilement visibles sur
 la toile qui en compte en réalité presque 3 millions.
 
-\subsubsection{Trouver les alphas pour l'ensemble des 3 millions de
+\subsection{Trouver les alphas pour l'ensemble des 3 millions de
 pixel}\label{trouver-les-alphas-pour-lensemble-des-3-millions-de-pixel}
 
 Nous utilisons la fonction predict pour calculer les nouveaux alphas
@@ -636,7 +639,7 @@ les 3 archétypes. Nous prenons un échantillons de 200 000 pixels :
 
 \pandocbounded{\includegraphics[keepaspectratio]{archetypes_files/figure-pdf/unnamed-chunk-24-1.pdf}}
 
-\subsubsection{Avec 2 archétypes}\label{avec-2-archuxe9types}
+\subsection{Avec 2 archétypes}\label{avec-2-archuxe9types}
 
 Essayons maitnenant de reproduire le tableau mais avec seulement 2
 archétypes :

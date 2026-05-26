@@ -20,11 +20,9 @@ bibliography: references.bib
 biblio-style: apa
 ---
 
-# Les archétypes
+# Les archétypes, cas théorique : le dataset toy
 
-L'article de @archetypes présente le package R **`archetypes`**. Un archétype, est d'après le Larousse, un *"Modèle original ou idéal sur lequel est fait un ouvrage, une œuvre"*. Le travail ici a pour objectif de trouver des points, appelés archétypes, dans un ensemble d'observations multivariées, qui permettent à toutes les observations d'être correctement représentées par une combinaison convexe des archétypes.
-
-## Cas théorique : le dataset toy
+L'article de @archetypes présente le package R **`archetypes`**. Un archétype, est d'après le Larousse, un *"Modèle original ou idéal sur lequel est fait un ouvrage, une œuvre"*. Le travail ici a pour objectif de trouver des points, appelés archétypes, dans un ensemble d'observations multivariées. La combinaison convexe de ces archétypes permet de représenter les observations.
 
 Chargement des librairies R utilisées dans le projet :
 
@@ -38,10 +36,11 @@ library(tidyverse)
 library(plotly)
 library(sf)
 library(scatterplot3d)
+library(knitr)
+library(kableExtra)
 ```
 
-L'article utilise un jeu de données appelé **`toy`** pour présenter un exemple théorique de la détermination des archétypes. Les observations de **`toy`** sont définies par 2 coordonnées : x et y.
-Nous chargeons le dataset et nous représentons les observations dans un plan :
+L'article utilise un jeu de données appelé **`toy`** pour présenter un exemple théorique de la détermination des archétypes. Les observations de **`toy`** sont définies par 2 coordonnées : x et y. Nous chargeons le dataset et nous représentons les observations dans un plan :
 
 ```{r}
 #| echo: false
@@ -58,7 +57,7 @@ Les archétypes doivent être placés dans l'enveloppe convexe de la distributio
 
 Résultat de théorème : à partir de 2 archétypes, les archétypes doivent être sur la bordure de l'enveloppe convexe. Dans l'algorithme, les archétypes sont placés aléatoirement dans l'enveloppe et les itérations suivantes déplacent les archétypes vers les extrémités afin de minimiser les distances. L'algorithme ne connait pas à priori la forme de la distribution des individus. Attention, ici, comme avec les k-means, les archétypes trouvés peuvent être un sous-optimum.
 
-On relie les archétypes entre eux par des segments. Les observations sont projetés sur les segments tracés entre les archétypes. Les points à l'intérieur de l'enveloppe convexe sont une combinaison des 3 archétypes. Ceux à l'extérieur doivent être projeté. A la fin de la simulation, le "bruit" sont les individus qui ne sont pas dans l'enveloppe. Pour avoir un bruit égale à 0, il faudrait avoir le même nombre d'archétypes que le nombre de points sur l'enveloppe convexe.
+On relie les archétypes entre eux par des segments. Les points à l'intérieur de l'enveloppe convexe sont une combinaison des 3 archétypes. Ceux à l'extérieur, aussi appelé bruit, doivent être projetés sur les segments qui relient les archétypes entre eux. Pour avoir un bruit égale à 0, il faudrait avoir le même nombre d'archétypes que le nombre de points sur l'enveloppe convexe.
 
 Déterminons maintenant 3 archétypes pour le dataset toy :
 
@@ -68,8 +67,8 @@ Déterminons maintenant 3 archétypes pour le dataset toy :
 # nous utilisons la même seed que dans l'article
 set.seed(1986)
 
-# nous utilisons la fonction archetypes sur le dataset toy, nous spécifions le nombre 
-#d'archetypes voulu à 3
+# nous utilisons la fonction archetypes sur le dataset toy, nous spécifions  
+# le nombre d'archetypes voulu à 3
 a <- archetypes(toy, 3,verbose = TRUE)
 a
 ```
@@ -83,7 +82,25 @@ Les coordonnées des archétypes sont les suivantes :
 #| message: false
 #| warning: false
 #les coordonnées des archétypes
-a$archetypes
+# a$archetypes
+
+
+# Créer la matrice
+mat <- matrix(
+  c(18.832121, 18.623102,
+    14.204922,  2.239856,
+     2.872474, 10.197810),
+  nrow = 3, byrow = TRUE,
+  dimnames = list(c("[1,]", "[2,]", "[3,]"), c("x", "y"))
+)
+kable(mat, digits = 6, caption = "Matrice de coordonnées") |>
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "bordered"),
+    full_width = FALSE,
+    position = "center"
+  ) |>
+  row_spec(0, bold = TRUE, color = "white", background = "#3498db") |>
+  column_spec(1, bold = TRUE, color = "gray")
 ```
 
 Nous pouvons maintenant les représenter dans le plan avec les autres observations :
@@ -145,6 +162,7 @@ b <- archetypes(toy, 4,verbose = TRUE)
 ```
 
 Les coordonnées des 4 archétypes sont les suivantes :
+
 ```{r}
 #| echo: false
 #| message: false
@@ -153,6 +171,7 @@ b$archetypes
 ```
 
 Nous pouvons maintenant les visualiser dans le plan :
+
 ```{r}
 #| echo: false
 #| message: false
@@ -183,13 +202,14 @@ ggplot() +
   labs(color = "Jeu de données")
 ```
 
-## Cas pratique : La Nuit étoilée
+# Cas pratique : La Nuit étoilée
 
-Maintenant que nous avons réalisé le projet théorique, nous prenons un cas pratique avec un tableau. Nous souhaitons trouver les archétypes de couleur du tableau de Van Gogh **La nuit étoilée**. Nous transformons l'image du tableau en data frame. 
+Maintenant que nous avons réalisé le projet théorique, nous prenons un cas pratique avec un tableau. Nous souhaitons trouver les archétypes de couleur du tableau de Van Gogh **La nuit étoilée**. Nous transformons l'image du tableau en data frame.
 
 Chaque ligne représente un pixel de l'image et la valeur de couleur associée. Les couleurs sont décrites par le tryptique RGB. Soit R rouge (codé 1), G vert (codé 2), et B bleu (codé 3). Par pixel nous avons donc 3 lignes pour décrire sa couleur. En faisant un pivot wider nous retrouvons une ligne par pixel avec les valeurs des couleurs RGB dans 3 colonnes distinctes.
 
 La transformations du data-frame s'effectue comme suit :
+
 ```{r}
 #| message: false
 #| warning: false
@@ -204,14 +224,15 @@ df_rgb <- df_rgb |> rename(R='1',G='2',B='3')
 ```
 
 Et voici les 10 premières ligne du data-frame :
+
 ```{r}
 #| echo: false
 #| message: false
 #| warning: false
 head(df_rgb,10)
 ```
-Nous choisissons aléatoirement un échantillon de 50 000 pixels pour les représenter dans l'espace 3D RGB. Nous appliquons à chaque pixel sa couleur dans l'expace :
 
+Nous choisissons aléatoirement un échantillon de 50 000 pixels pour les représenter dans l'espace 3D RGB. Nous appliquons à chaque pixel sa couleur dans l'expace :
 
 ```{r}
 #| echo: false
@@ -231,6 +252,7 @@ scatterplot3d(
   main       = "Distribution de 50 000 pixels du tableau"
 )
 ```
+
 Nous souhaitons trouver les archétypes de ces pixels, nous décidons de tester avec 3 archétypes :
 
 ```{r}
@@ -255,7 +277,6 @@ arch$archetypes
 ```
 
 Nous pouvons ajouter ces archétypes à la distribution des 50 000 points :
-
 
 ```{r}
 #| echo: false
@@ -323,7 +344,11 @@ screeplot(nb_arche)
 
 Nous voulons maintenant revenir à une image avec les 50 000 pixels que nous avons choisi aléatoirement. Nous voulons que les 50 000 pixels prennent des couleurs liées aux archétypes, c'est à dire projetées sur le plan formé par les 3 archétypes.
 
-Celà revient à résoudre une équation du style X_proj=alpha\*Z avec Z la matrice des archétypes et alpha les paramètres qui permettent la projection.
+Celà revient à résoudre une équation du style :
+$$
+X_{proj} = \alpha \cdot Z
+$$
+avec $Z$ la matrice des archétypes et $\alpha$ les paramètres qui permettent la projection.
 
 Nous transformons les coordonnées des archétypes en matrice :
 
@@ -335,7 +360,7 @@ Z=as.matrix(arch_df)
 
 ```
 
-Nous obtenons les valeurs alphas grâce au paramètre alpha de l'objet archetypes nommé arch :
+Nous obtenons les valeurs $\alpha$ grâce au paramètre alphas de l'objet archetypes nommé arch :
 
 ```{r}
 #| message: false
@@ -345,7 +370,7 @@ alpha<-arch$alphas
 
 ```
 
-Nous calculons la matrice X_proj :
+Nous calculons la matrice $X_{proj}$ :
 
 ```{r}
 #| message: false
@@ -429,8 +454,7 @@ plot(image_proj)
 
 Les 50 000 points choisis aléatoirements sont difficilement visibles sur la toile qui en compte en réalité presque 3 millions.
 
-
-### Trouver les alphas pour l'ensemble des 3 millions de pixel
+## Trouver les alphas pour l'ensemble des 3 millions de pixel
 
 Nous utilisons la fonction predict pour calculer les nouveaux alphas puis nous recalculons les différentes matrices pour obtenir l'image finale. **Expliquer cette fonction**
 
@@ -453,7 +477,9 @@ colnames(X_tilde) <- c("R", "G", "B")
 X_tilde<-cbind(df_rgb[,1:2],X_tilde)
 
 ```
+
 Le tableau obtenu est quasiment identique à l'original :
+
 ```{r}
 #| message: false
 #| warning: false
@@ -516,9 +542,10 @@ s3d$points3d(
 )
 ```
 
-### Avec 2 archétypes
+## Avec 2 archétypes
 
 Essayons maitnenant de reproduire le tableau mais avec seulement 2 archétypes :
+
 ```{r}
 #| label: 2 archétypes
 #| message: false
@@ -527,8 +554,9 @@ Essayons maitnenant de reproduire le tableau mais avec seulement 2 archétypes :
 arch<-archetypes(df_sample[,3:5],2,verbose = TRUE)
 
 ```
-8 itérations sont nécessaires pour trouver les coordonnées des archétypes.
-Nous déterminons les alphas puis nous calculons les nouvelles couleurs des pixels :
+
+8 itérations sont nécessaires pour trouver les coordonnées des archétypes. Nous déterminons les alphas puis nous calculons les nouvelles couleurs des pixels :
+
 ```{r}
 #| label: predict
 #| message: false
@@ -559,6 +587,7 @@ X_tilde<-cbind(df_rgb[,1:2],X_tilde)
 ```
 
 Les pixels sont projetés sur le segment tracés entre les 2 archétypes.
+
 ```{r}
 #| echo: false
 #| message: false
@@ -610,7 +639,9 @@ s3d$points3d(
 )
 
 ```
+
 Puis nous pouvons reproduire le tableau avec les nouvelles couleurs des pixels.
+
 ```{r}
 #| echo: false
 #| message: false
@@ -627,9 +658,5 @@ image_proj <- as.cimg(image_proj)
 plot(image_proj)
 
 ```
+
 Nous voyons que le jaune n'est pas présent. C'est cohérent avec les 2 archétypes que nous avons trouvés qui sont de couleur noir et gris. Le segment tracé entre les 2 ne comprend pas de jaune. Les pixels projetés sur ce segment ne peuvent donc pas prendre cette couleur.
-
-
-
-
-
