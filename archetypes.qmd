@@ -167,7 +167,27 @@ Les coordonnées des 4 archétypes sont les suivantes :
 #| echo: false
 #| message: false
 #| warning: false
-b$archetypes
+# b$archetypes
+mat <- matrix(
+  c(19.894904, 17.767205,
+     2.860161,  9.941252,
+    15.500106, 18.779746,
+    13.842473,  2.218635),
+  nrow = 4, byrow = TRUE,
+  dimnames = list(c("[1,]", "[2,]", "[3,]", "[4,]"), c("x", "y"))
+)
+
+# Présentation
+kable(mat, digits = 6, caption = "Matrice de coordonnées") |>
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "bordered"),
+    full_width = FALSE,
+    position = "center"
+  ) |>
+  row_spec(0, bold = TRUE, color = "white", background = "#3498db") |>
+  column_spec(1, bold = TRUE, color = "gray")
+
+
 ```
 
 Nous pouvons maintenant les visualiser dans le plan :
@@ -272,7 +292,29 @@ Il faut 14 itérations pour minimiser le RSS et trouver les coordonnées des 3 a
 #| message: false
 #| warning: false
 
-arch$archetypes
+#arch$archetypes
+
+mat <- matrix(
+  c(2.580663e-01, 4.151952e-01, 0.7902961889,
+    1.403901e-05, 1.696535e-05, 0.0000202352,
+    9.975207e-01, 9.510556e-01, 0.5898706729),
+  nrow = 3, byrow = TRUE,
+  dimnames = list(c("[1,]", "[2,]", "[3,]"), c("R", "G", "B"))
+)
+
+# Présentation PDF
+kable(mat,
+      digits     = 8,
+      booktabs   = TRUE,
+      scientific = TRUE,
+      caption    = "Matrice RGB") |>
+  kable_styling(
+    latex_options = c("striped", "hold_position","condensed", "bordered"),
+    full_width    = FALSE,
+    position      = "center"
+  ) |>
+  row_spec(0, bold = TRUE, color = "white", background = "#3498db") |>
+  column_spec(1, bold = TRUE, color = "gray")
 
 ```
 
@@ -320,7 +362,7 @@ s3d$points3d(
 
 Nous observons les 3 archetypes : un archétype noir, un archétype bleu foncé et un archétypes jaune
 
-Nous voulons maintenant déterminer le bon nombre d'archétypes. Nous utilisons la fonction stepArchetypes en spécifiant la recherche d'archetypes entre 1 et 5 :
+Nous voulons maintenant déterminer le bon nombre d'archétypes. Nous utilisons la fonction stepArchetypes en spécifiant la recherche d'archetypes entre 1 et 4 :
 
 ```{r}
 #| echo: true
@@ -440,7 +482,8 @@ df_proj <- cbind(df_sample[,1:2],X_proj)
 #| message: false
 #| warning: false
 
-image_proj <- df_proj |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |> 
+image_proj <- df_proj |> pivot_longer( cols = c("R","G","B"), 
+                                       names_to = "canal", values_to = "value") |> 
 
   mutate(cc = match(canal, c("R","G","B"))) |> 
 
@@ -456,7 +499,7 @@ Les 50 000 points choisis aléatoirements sont difficilement visibles sur la toi
 
 ## Trouver les alphas pour l'ensemble des 3 millions de pixel
 
-Nous utilisons la fonction predict pour calculer les nouveaux alphas puis nous recalculons les différentes matrices pour obtenir l'image finale. **Expliquer cette fonction**
+Nous utilisons la fonction predict pour calculer les nouveaux alphas. Cette fonction permet de recalculer la combinaison d'$\alpha$ qui permet la projection des pixels sur le plan créé par nos 3 archétypes. Ensuite nous recalculons les différentes matrices pour obtenir l'image finale.
 
 ```{r}
 #| label: methode predict
@@ -484,7 +527,8 @@ Le tableau obtenu est quasiment identique à l'original :
 #| message: false
 #| warning: false
 
-image_proj <- X_tilde |> pivot_longer( cols = c("R","G","B"), names_to = "canal", values_to = "value") |>
+image_proj <- X_tilde |> pivot_longer( cols = c("R","G","B"), names_to = "canal",
+                                       values_to = "value") |>
 
   mutate(cc = match(canal, c("R","G","B"))) |>
 
